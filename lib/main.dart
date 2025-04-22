@@ -1,4 +1,4 @@
-import 'package:fit_well/screens/signin_screen.dart';
+import 'package:fit_well/screens/authentication_screen/signin_screen.dart';
 import 'package:flutter/material.dart';
 
 void main() {
