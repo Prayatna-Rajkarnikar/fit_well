@@ -1,11 +1,15 @@
-import 'package:fit_well/screens/signin_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:fit_well/providers/auth_provider.dart';
+import 'signin_screen.dart';
 
 class SignUpScreen extends StatelessWidget {
   const SignUpScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final authProvider = Provider.of<AuthProvider>(context);
+    final TextEditingController _nameController = TextEditingController();
     final TextEditingController _emailController = TextEditingController();
     final TextEditingController _passwordController = TextEditingController();
 
@@ -18,7 +22,7 @@ class SignUpScreen extends StatelessWidget {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Text(
+                const Text(
                   'Register',
                   style: TextStyle(
                     fontSize: 24,
@@ -26,53 +30,61 @@ class SignUpScreen extends StatelessWidget {
                     color: Colors.white,
                   ),
                 ),
-                SizedBox(height: 32),
+                const SizedBox(height: 32),
                 _buildLabel("Username"),
-                _buildInputField(),
-                SizedBox(height: 16),
+                _buildInputField(controller: _nameController),
+                const SizedBox(height: 16),
                 _buildLabel("Email"),
-                _buildInputField(),
-                SizedBox(height: 16),
+                _buildInputField(controller: _emailController),
+                const SizedBox(height: 16),
                 _buildLabel("Password"),
-                _buildInputField(obscure: true),
-                SizedBox(height: 24),
+                _buildInputField(
+                  controller: _passwordController,
+                  obscure: true,
+                ),
+                const SizedBox(height: 24),
                 SizedBox(
                   width: double.infinity,
                   child: ElevatedButton(
-                    onPressed: () {},
+                    onPressed: () {
+                      authProvider.registerUser(
+                        name: _nameController.text.trim(),
+                        email: _emailController.text.trim(),
+                        password: _passwordController.text,
+                      );
+                    },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.green[600],
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(12),
                       ),
-                      padding: EdgeInsets.symmetric(vertical: 16),
+                      padding: const EdgeInsets.symmetric(vertical: 16),
                     ),
-                    child: Text(
-                      'Submit',
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
+                    child:
+                        authProvider.isLoading
+                            ? const CircularProgressIndicator(
+                              color: Colors.white,
+                            )
+                            : const Text(
+                              'Submit',
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
                   ),
                 ),
-                SizedBox(height: 16),
+                const SizedBox(height: 16),
                 TextButton(
                   onPressed: () {
-                    // Navigate to login
+                    Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(builder: (_) => const SignInScreen()),
+                    );
                   },
-                  child: TextButton(
-                    onPressed: () {
-                      Navigator.pushAndRemoveUntil(
-                        context,
-                        MaterialPageRoute(builder: (context) => SignInScreen()),
-                        (route) => false,
-                      );
-                    },
-                    child: Text(
-                      "Already have an account?",
-                      style: TextStyle(color: Colors.green[400]),
-                    ),
+                  child: Text(
+                    "Already have an account?",
+                    style: TextStyle(color: Colors.green[400]),
                   ),
                 ),
               ],
@@ -86,12 +98,16 @@ class SignUpScreen extends StatelessWidget {
   Widget _buildLabel(String text) {
     return Align(
       alignment: Alignment.centerLeft,
-      child: Text(text, style: TextStyle(color: Colors.white)),
+      child: Text(text, style: const TextStyle(color: Colors.white)),
     );
   }
 
-  Widget _buildInputField({bool obscure = false}) {
+  Widget _buildInputField({
+    required TextEditingController controller,
+    bool obscure = false,
+  }) {
     return TextField(
+      controller: controller,
       obscureText: obscure,
       decoration: InputDecoration(
         filled: true,
@@ -101,7 +117,7 @@ class SignUpScreen extends StatelessWidget {
           borderSide: BorderSide.none,
         ),
       ),
-      style: TextStyle(color: Colors.white),
+      style: const TextStyle(color: Colors.white),
     );
   }
 }

@@ -1,10 +1,11 @@
-import 'package:fit_well/screens/signin_screen.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
+import 'package:fit_well/screens/signin_screen.dart';
 import 'package:fit_well/screens/wear_home_screen.dart';
+import 'package:fit_well/providers/theme_provider.dart';
+import 'package:fit_well/providers/auth_provider.dart';
 import 'package:fit_well/utils/theme.dart';
 import 'package:is_wear/is_wear.dart';
-import 'package:fit_well/providers/theme_provider.dart';
+import 'package:provider/provider.dart';
 
 late final bool isWear;
 
@@ -13,8 +14,11 @@ void main() async {
   isWear = (await IsWear().check()) ?? false;
 
   runApp(
-    ChangeNotifierProvider(
-      create: (_) => ThemeProvider(),
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => ThemeProvider()),
+        ChangeNotifierProvider(create: (_) => AuthProvider()),
+      ],
       child: const MyApp(),
     ),
   );
@@ -30,7 +34,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: "Fit Well",
-      home: isWear ? const WearHomeScreen() : SignInScreen(),
+      home: isWear ? const WearHomeScreen() : const SignInScreen(),
       themeMode: themeProvider.themeMode,
       theme: MyTheme.lightTheme(isWear: isWear),
       darkTheme: MyTheme.darkTheme(isWear: isWear),
