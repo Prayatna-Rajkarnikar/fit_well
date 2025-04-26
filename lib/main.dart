@@ -1,3 +1,4 @@
+import 'package:fit_well/providers/calorie_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:fit_well/screens/signin_screen.dart';
 import 'package:fit_well/screens/wear_home_screen.dart';
@@ -18,6 +19,8 @@ void main() async {
       providers: [
         ChangeNotifierProvider(create: (_) => ThemeProvider()),
         ChangeNotifierProvider(create: (_) => AuthProvider()),
+        // ChangeNotifierProvider(create: (_) => WatchProvider()),
+        ChangeNotifierProvider(create: (_) => CalorieProvider()),
       ],
       child: const MyApp(),
     ),

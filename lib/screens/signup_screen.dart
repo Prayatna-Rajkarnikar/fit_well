@@ -3,15 +3,38 @@ import 'package:provider/provider.dart';
 import 'package:fit_well/providers/auth_provider.dart';
 import 'signin_screen.dart';
 
-class SignUpScreen extends StatelessWidget {
+class SignUpScreen extends StatefulWidget {
   const SignUpScreen({super.key});
+
+  @override
+  State<SignUpScreen> createState() => _SignUpScreenState();
+}
+
+class _SignUpScreenState extends State<SignUpScreen> {
+  late TextEditingController _nameController = TextEditingController();
+  late TextEditingController _emailController = TextEditingController();
+  late TextEditingController _passwordController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    _nameController = TextEditingController();
+    _emailController = TextEditingController();
+    _passwordController = TextEditingController();
+  }
+
+  @override
+  void dispose() {
+    _nameController.dispose();
+    _emailController.dispose();
+    _passwordController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     final authProvider = Provider.of<AuthProvider>(context);
-    final TextEditingController _nameController = TextEditingController();
-    final TextEditingController _emailController = TextEditingController();
-    final TextEditingController _passwordController = TextEditingController();
+
 
     return Scaffold(
       backgroundColor: Colors.black,
@@ -47,10 +70,10 @@ class SignUpScreen extends StatelessWidget {
                   width: double.infinity,
                   child: ElevatedButton(
                     onPressed: () {
-                      authProvider.registerUser(
-                        name: _nameController.text.trim(),
-                        email: _emailController.text.trim(),
-                        password: _passwordController.text,
+                      authProvider.register(
+                        _nameController.text.trim(),
+                        _emailController.text.trim(),
+                         _passwordController.text,
                       );
                     },
                     style: ElevatedButton.styleFrom(

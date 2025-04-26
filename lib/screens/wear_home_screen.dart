@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:wear_plus/wear_plus.dart';
 import 'package:provider/provider.dart';
+import 'package:wear_plus/wear_plus.dart';
+
 import '../providers/theme_provider.dart';
+import 'wear_calorie_screen.dart';
 
 class WearHomeScreen extends StatefulWidget {
   const WearHomeScreen({super.key});
@@ -11,6 +13,12 @@ class WearHomeScreen extends StatefulWidget {
 }
 
 class _WearHomeScreenState extends State<WearHomeScreen> {
+  @override
+  void initState() {
+    super.initState();
+    // Provider.of<WatchProvider>(context, listen: false);
+  }
+
   @override
   Widget build(BuildContext context) {
     return AmbientMode(
@@ -41,6 +49,41 @@ class _WearHomeScreenState extends State<WearHomeScreen> {
                           },
                         );
                       },
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            body: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16.0),
+              child: SingleChildScrollView(
+                child: Column(
+                  children: [
+                    Card(
+                      child: ListTile(
+                        title: const Text('Calories Burned'),
+
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => const WearCalorieScreen(),
+                            ),
+                          );
+                        },
+                      ),
+                    ),
+                    Card(
+                      child: const ListTile(
+                        title: Text('Water Log'),
+                        subtitle: Text('Tap to view or update water intake'),
+                      ),
+                    ),
+                    Card(
+                      child: const ListTile(
+                        title: Text('Timer'),
+                        subtitle: Text('Start or view your timer'),
+                      ),
                     ),
                   ],
                 ),
