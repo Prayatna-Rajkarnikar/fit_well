@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:wear_plus/wear_plus.dart';
 
 import '../providers/theme_provider.dart';
+import '../providers/watch_provider.dart';
 import 'wear_calorie_screen.dart';
 
 class WearHomeScreen extends StatefulWidget {
@@ -16,7 +17,7 @@ class _WearHomeScreenState extends State<WearHomeScreen> {
   @override
   void initState() {
     super.initState();
-    // Provider.of<WatchProvider>(context, listen: false);
+    Provider.of<WatchProvider>(context, listen: false);
   }
 
   @override

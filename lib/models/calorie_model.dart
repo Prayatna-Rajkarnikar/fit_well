@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart';
 
 class CalorieModel {
   final String activity;
@@ -14,7 +13,6 @@ class CalorieModel {
   });
 
   factory CalorieModel.fromJson(Map<String, dynamic> json) {
-    debugPrint("🔥 Parsed JSON in model: $json");
     return CalorieModel(
       activity: json["activity"],
       durationHours: json["durationHours"],

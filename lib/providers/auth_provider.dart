@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../models/user_model.dart';
 import 'package:watch_connectivity/watch_connectivity.dart';
 
@@ -44,8 +45,8 @@ class AuthProvider with ChangeNotifier {
 
   Future<void> _sendUserDataToWatch(UserModel user) async {
     final watch = WatchConnectivity();
-    // final prefs = await SharedPreferences.getInstance();
-    // final token = prefs.getString('token');
+    final prefs = await SharedPreferences.getInstance();
+    final token = prefs.getString('token');
 
     try {
       final userData = {
@@ -53,7 +54,7 @@ class AuthProvider with ChangeNotifier {
         'name': user.name,
         'email': user.email,
         'weightKg': user.weightKg,
-        // 'token': token
+        'token': token
       };
       await watch.sendMessage(userData);
     } catch (e) {

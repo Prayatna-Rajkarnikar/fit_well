@@ -1,3 +1,5 @@
+import 'package:fit_well/screens/wear_add_calorie_screen.dart';
+import 'package:fit_well/utils/custom_themes/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:wear_plus/wear_plus.dart';
@@ -16,7 +18,7 @@ class _WearCalorieScreenState extends State<WearCalorieScreen> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) async {
-      await Future.delayed(const Duration(seconds: 3)); // wait a bit
+      await Future.delayed(const Duration(seconds: 3));
       if (mounted) {
         Provider.of<CalorieProvider>(
           context,
@@ -35,27 +37,35 @@ class _WearCalorieScreenState extends State<WearCalorieScreen> {
     return AmbientMode(
       builder:
           (context, mode, child) => Scaffold(
-            body: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16.0),
-              child: SingleChildScrollView(
-                child: Column(
-                  children: [
-                    Card(
-                      child: ListTile(
-                        title: const Text('Calories Burned'),
-                        subtitle:
-                            calorieProvider.isLoading
-                                ? const Text('No calorie')
-                                : Text(
-                                  '${totalCalories.toStringAsFixed(2)} kcal',
-                                ),
-                        onTap: () {},
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
+            body: SafeArea(
+               child: Center(
+                 child: Column(
+                   mainAxisAlignment: MainAxisAlignment.center,
+                   children: [
+                     Row(
+                       spacing: 8,
+                       mainAxisAlignment: MainAxisAlignment.center,
+                       children: [
+
+                       calorieProvider.isLoading
+                           ? Text('0.0', style: TextStyle(fontSize: 28.0, fontWeight: FontWeight.bold),
+                 )
+                           : Text(
+                         totalCalories.toString(), style: TextStyle(fontSize: 28.0, fontWeight: FontWeight.bold),
+                       ),
+                       Text("kcal", style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: AppColors.myGreen))
+                     ],
+                     ),
+
+                     Text('Calories Burned'),
+                     SizedBox(height: 24,),
+                     ElevatedButton(onPressed:() {
+                       Navigator.push(context, MaterialPageRoute(builder: (_) => WearAddCalorieScreen(),));
+                     }, child: Text("Add"))
+                   ],
+                 ),
+               ),
+             ),
           ),
     );
   }
