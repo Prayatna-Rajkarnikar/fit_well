@@ -1,5 +1,6 @@
 import 'package:fit_well/providers/calorie_provider.dart';
 import 'package:fit_well/screens/wear_calorie_screen.dart';
+import 'package:fit_well/utils/custom_themes/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:wear_plus/wear_plus.dart';
@@ -39,36 +40,83 @@ class _WearAddCalorieScreenState extends State<WearAddCalorieScreen> {
                 return Column(
                   spacing: 10.0,
                   children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      spacing: 8,
+                      children: [
+                        Text(
+                          "Weight",
+                          style: Theme.of(context).textTheme.bodyMedium,
+                        ),
+                        Row(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          spacing: 4,
+                          children: [
+                            Text(
+                              "65",
+                              style: Theme.of(context).textTheme.headlineLarge,
+                            ),
+                            Text(
+                              "kg",
+                              style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: AppColors.myGreen),
+                            ),
+                          ],
+                        ),
+                        IconButton(
+                          icon: const Icon(Icons.edit,size: 12,),
+                          onPressed: () {
+                          },
+                        ),
+                      ],
+                    ),
+
                     Text(
                       "Activity",
                       style: Theme.of(context).textTheme.bodyMedium,
                     ),
-                    DropdownButtonFormField<String>(
-                      value: selectedActivity,
-                      items: activities.map<DropdownMenuItem<String>>((activity) {
-                        return DropdownMenuItem<String>(
-                          value: activity.activity,
-                          child: Text(activity.activity),
-                        );
-                      }).toList(),
+                    SizedBox(
+                      height: 24,
+                      width: MediaQuery.of(context).size.width*0.7,
+                      child: DropdownButtonFormField<String>(
+                        value: selectedActivity,
+                        items: activities.map<DropdownMenuItem<String>>((activity) {
+                          return DropdownMenuItem<String>(
+                            value: activity.activity,
+                            child: Text(activity.activity, style: Theme.of(context).textTheme.headlineLarge,),
+                          );
+                        }).toList(),
 
-                      onChanged: (String? newValue) {
-                        setState(() {
-                          selectedActivity = newValue;
-                        });
-                      },
-                      hint: const Text("Choose activity"),
-                    ),
-                    TextField(
-                      keyboardType: TextInputType.number,
-                      decoration: const InputDecoration(
-                        labelText: 'Duration in hours',
+                        onChanged: (String? newValue) {
+                          setState(() {
+                            selectedActivity = newValue;
+                          });
+                        },
+                        hint: Text("Choose activity"),
+                        style: Theme.of(context).textTheme.bodyMedium
                       ),
-                      onChanged: (value) {
-                        setState(() {
-                          durationHours = int.tryParse(value);
-                        });
-                      },
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      spacing: 20,
+                      children: [
+                        SizedBox(
+                          height: 24,
+                          width: MediaQuery.of(context).size.width*0.2,
+                          child: TextFormField(
+                            style: Theme.of(context).textTheme.headlineLarge,
+                            keyboardType: TextInputType.number,
+                            decoration: InputDecoration(
+                              hintText: 'Num',
+                            ),
+                            onChanged: (value) {
+                              setState(() {
+                                durationHours = int.tryParse(value);
+                              });
+                            },
+                          ),
+                        ),
+                        Text("h", style:  Theme.of(context).textTheme.bodyMedium?.copyWith(color: AppColors.myGreen),)
+                      ],
                     ),
                     Center(
                       child: ElevatedButton(
@@ -77,18 +125,44 @@ class _WearAddCalorieScreenState extends State<WearAddCalorieScreen> {
                             try {
                               await calorieProvider.addCalories(selectedActivity!, durationHours!);
                               Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => WearCalorieScreen(),));
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(content: Text("Calories added successfully!")),
-                              );
+                              showDialog(context: context, builder: (context) {
+                                return AlertDialog(
+                                  title: const Text('Success'),
+                                  content: const Text('Action was successful.'),
+                                  actions: [
+                                    TextButton(
+                                      onPressed: () => Navigator.of(context).pop(),
+                                      child: const Text('OK'),
+                                    ),
+                                  ],
+                                );
+                              });
                             } catch (e) {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(content: Text("Failed: $e")),
-                              );
+                              showDialog(context: context, builder: (context) {
+                                return AlertDialog(
+                                  title: const Text('Failed'),
+                                  content: Text("Failed to add calories: $e"),
+                                  actions: [
+                                    TextButton(
+                                      onPressed: () => Navigator.of(context).pop(),
+                                      child: const Text('OK'),
+                                    ),
+                                  ],
+                                );
+                              });
                             }
                           } else {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(content: Text("Please select an activity and enter duration.")),
-                            );
+                           showDialog(context: context, builder: (context) {
+                             return AlertDialog(title: Text("Error"),
+                             content: Text("Please fill all the fields"),
+                               actions: [
+                                 TextButton(
+                                   onPressed: () => Navigator.of(context).pop(),
+                                   child: const Text('OK'),
+                                 ),
+                               ],
+                             );
+                           },);
                           }
                         },
                         child: const Text("Submit"),
