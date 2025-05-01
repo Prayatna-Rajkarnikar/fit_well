@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 import 'package:wear_plus/wear_plus.dart';
 
 import '../providers/calorie_provider.dart';
+import '../providers/watch_provider.dart';
 
 class WearCalorieScreen extends StatefulWidget {
   const WearCalorieScreen({super.key});
@@ -17,15 +18,11 @@ class _WearCalorieScreenState extends State<WearCalorieScreen> {
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) async {
-      await Future.delayed(const Duration(seconds: 3));
-      if (mounted) {
-        Provider.of<CalorieProvider>(
+    Provider.of<WatchProvider>(context, listen: false);
+    Provider.of<CalorieProvider>(
           context,
           listen: false,
         ).fetchCaloriesBurned();
-      }
-    });
   }
 
   @override

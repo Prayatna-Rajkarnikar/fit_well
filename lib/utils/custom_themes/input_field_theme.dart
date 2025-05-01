@@ -14,7 +14,7 @@ class MyInputFieldTheme {
         ),
         contentPadding: EdgeInsets.symmetric(
           vertical: isWear ? 2.0 : 16.0,
-          horizontal: isWear ? 8.0 : 16.0,
+          horizontal: isWear ? 18.0 : 16.0,
         ),
         hintStyle: TextStyle(
           color: AppColors.myBlack,
@@ -33,7 +33,7 @@ class MyInputFieldTheme {
 
         contentPadding: EdgeInsets.symmetric(
           vertical: isWear ? 2.0 : 16.0,
-          horizontal: isWear ? 8.0 : 16.0,
+          horizontal: isWear ? 18.0 : 16.0,
         ),
         hintStyle: TextStyle(
           color: AppColors.myBlack,

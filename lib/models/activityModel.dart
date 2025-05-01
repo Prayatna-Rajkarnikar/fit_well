@@ -4,6 +4,9 @@ class ActivityModel {
   ActivityModel({required this.activity});
 
   factory ActivityModel.fromJson(Map<String, dynamic> json) {
-    return ActivityModel(activity: json["activity"]);
+    if (json['activity'] == null) {
+      throw Exception("Invalid activity received from backend: $json");
+    }
+    return ActivityModel(activity: json["activity"] as String);
   }
 }

@@ -43,7 +43,7 @@ class CalorieService {
   }
 
   Future<CalorieModel> addCalorie(String activity, int durationHours) async {
-    final url = Uri.parse("$baseUrl/fitness/calculateCalories");
+    final url = Uri.parse("$baseUrl/fitness/calculateCalorie");
 
     try {
       final prefs = await SharedPreferences.getInstance();
@@ -67,7 +67,8 @@ class CalorieService {
 
       if(response.statusCode == 200) {
         final data = jsonDecode(response.body);
-        final calorie = CalorieModel.fromJson(data);
+        debugPrint("response: ${response.body}");
+        final calorie = CalorieModel.fromJson(data['record']);
         return calorie;
       } else {
         throw Exception("Failed to add calories");

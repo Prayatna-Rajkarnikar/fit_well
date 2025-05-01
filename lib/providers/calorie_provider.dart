@@ -40,6 +40,7 @@ class CalorieProvider with ChangeNotifier {
       _calorieData = await _calorieService.addCalorie(activity, durationHours);
 
     } catch(e) {
+      debugPrint("$e");
       throw Exception("Error adding calorie: $e");
     }
 
