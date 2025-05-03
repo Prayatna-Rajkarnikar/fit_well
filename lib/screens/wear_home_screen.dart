@@ -18,6 +18,7 @@ class _WearHomeScreenState extends State<WearHomeScreen> {
   void initState() {
     super.initState();
     Provider.of<WatchProvider>(context, listen: false);
+    Provider.of<WatchProvider>(context, listen: false).loadUserData();
   }
 
   @override

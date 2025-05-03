@@ -97,5 +97,38 @@ Future<List<ActivityModel>> getActivities() async{
     }
 }
 
+Future<double> updateWeight(double newWeight) async {
+final url = Uri.parse("$baseUrl/fitness/editWeight");
+try {
+  final prefs = await SharedPreferences.getInstance();
+  String? token = prefs.getString('token');
+
+  if(token == null) {
+    throw Exception('No token found. Please log in again.');
+  }
+
+  final response = await http.put(
+      url,
+      headers: {
+        'Content-type': 'application/json',
+        'Cookie': 'token=$token'},
+      body: jsonEncode(
+          {
+            "weightKg": newWeight,
+          })
+  );
+  final data = json.decode(response.body);
+
+
+  if(response.statusCode == 200) {
+    return (data['user']['weightKg'] as num).toDouble();
+  } else {
+    throw Exception('Failed to update weight');
+  }
+} catch (e){
+throw Exception(e);
+}
+}
+
 }
 

@@ -19,10 +19,9 @@ class _WearCalorieScreenState extends State<WearCalorieScreen> {
   void initState() {
     super.initState();
     Provider.of<WatchProvider>(context, listen: false);
-    Provider.of<CalorieProvider>(
-          context,
-          listen: false,
-        ).fetchCaloriesBurned();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      Provider.of<CalorieProvider>(context, listen: false).fetchCaloriesBurned();
+    });
   }
 
   @override

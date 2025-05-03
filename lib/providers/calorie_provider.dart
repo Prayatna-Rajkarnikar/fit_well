@@ -9,11 +9,16 @@ class CalorieProvider with ChangeNotifier {
   TotalCaloriesModel? _totalCalorieData;
   CalorieModel? _calorieData;
   List<ActivityModel>? _activityModel;
+  double? _weightKg;
+
 
   TotalCaloriesModel? get totalCalorieData => _totalCalorieData;
   CalorieModel? get calorieData => _calorieData;
   List<ActivityModel>? get activity => _activityModel;
+  double? get weightKg => _weightKg;
   bool _isLoading = false;
+
+
 
   bool get isLoading => _isLoading;
 
@@ -54,6 +59,18 @@ class CalorieProvider with ChangeNotifier {
       notifyListeners();
     } catch(e) {
       throw Exception("Error getting all activity");
+    }
+  }
+
+  Future<void> updateWeight(double newWeight) async {
+    try {
+      _weightKg = await _calorieService.updateWeight(newWeight);
+
+
+      notifyListeners();
+    } catch (e) {
+      print('Error updating weight: $e');
+      rethrow;
     }
   }
 }

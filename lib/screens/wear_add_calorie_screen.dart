@@ -5,6 +5,8 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:wear_plus/wear_plus.dart';
 
+import '../providers/watch_provider.dart';
+
 class WearAddCalorieScreen extends StatefulWidget {
   const WearAddCalorieScreen({super.key});
 
@@ -22,8 +24,62 @@ class _WearAddCalorieScreenState extends State<WearAddCalorieScreen> {
     Provider.of<CalorieProvider>(context, listen: false).getAllActivities();
   }
 
+  void _showUpdateWeightDialog(BuildContext context) {
+    final TextEditingController _weightController = TextEditingController();
+
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        contentPadding: const EdgeInsets.all(16),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Text("Update Weight"),
+            const SizedBox(height: 10),
+            TextField(
+              controller: _weightController,
+              keyboardType: TextInputType.number,
+              decoration: const InputDecoration(hintText: "Enter new weight (kg)"),
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                SizedBox(
+                  width: 44,
+                  child: TextButton(
+                    onPressed: () => Navigator.pop(context),
+                    child: Icon(Icons.cancel,size: 20,),
+                  ),
+                ),
+                SizedBox(
+                  width: 44,
+                  child: TextButton(
+                    onPressed: () async {
+                      final newWeight = double.tryParse(_weightController.text);
+                      if (newWeight != null) {
+                        await Provider.of<CalorieProvider>(context, listen: false).updateWeight(newWeight);
+                        Provider.of<WatchProvider>(context, listen: false).updateWeight(newWeight);
+                        Navigator.pop(context);
+                      }
+                    },
+                    child: Icon(Icons.done_rounded, size: 20,),
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+      )
+
+    );
+  }
+
+
   @override
   Widget build(BuildContext context) {
+    final watchUser = Provider.of<WatchProvider>(context).userData;
+    final weight = watchUser['weightKg'];
+
     return AmbientMode(
       builder: (context, mode, child) => Scaffold(
         body: Padding(
@@ -42,18 +98,18 @@ class _WearAddCalorieScreenState extends State<WearAddCalorieScreen> {
                   children: [
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
-                      spacing: 8,
                       children: [
                         Text(
                           "Weight",
                           style: Theme.of(context).textTheme.bodyMedium,
                         ),
+                        const SizedBox(width: 8),
                         Row(
                           crossAxisAlignment: CrossAxisAlignment.center,
                           spacing: 4,
                           children: [
                             Text(
-                              "65",
+                              weight != null ? weight.toString() : "0",
                               style: Theme.of(context).textTheme.headlineLarge,
                             ),
                             Text(
@@ -65,6 +121,7 @@ class _WearAddCalorieScreenState extends State<WearAddCalorieScreen> {
                         IconButton(
                           icon: const Icon(Icons.edit,size: 12,),
                           onPressed: () {
+                            _showUpdateWeightDialog(context);
                           },
                         ),
                       ],
