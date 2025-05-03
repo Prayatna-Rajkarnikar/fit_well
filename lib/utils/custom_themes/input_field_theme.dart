@@ -13,11 +13,11 @@ class MyInputFieldTheme {
           borderSide: BorderSide.none,
         ),
         contentPadding: EdgeInsets.symmetric(
-          vertical: isWear ? 2.0 : 16.0,
-          horizontal: isWear ? 8.0 : 16.0,
+          vertical: isWear ? 0.0 : 16.0,
+          horizontal: isWear ? 10.0 : 16.0,
         ),
         hintStyle: TextStyle(
-          color: AppColors.myBlack,
+          color: AppColors.myGray,
           fontSize: isWear ? 8.0 : 16.0,
         ),
       );
@@ -32,11 +32,11 @@ class MyInputFieldTheme {
         ),
 
         contentPadding: EdgeInsets.symmetric(
-          vertical: isWear ? 2.0 : 16.0,
-          horizontal: isWear ? 8.0 : 16.0,
+          vertical: isWear ? 0.0 : 16.0,
+          horizontal: isWear ? 10.0 : 16.0,
         ),
         hintStyle: TextStyle(
-          color: AppColors.myBlack,
+          color: AppColors.myLightGray,
           fontSize: isWear ? 8.0 : 16.0,
         ),
       );

@@ -1,16 +1,37 @@
+import 'package:fit_well/screens/signup_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:fit_well/providers/auth_provider.dart';
-import 'signup_screen.dart';
 
-class SignInScreen extends StatelessWidget {
+import '../providers/auth_provider.dart';
+
+class SignInScreen extends StatefulWidget {
   const SignInScreen({super.key});
+
+  @override
+  State<SignInScreen> createState() => _SignInScreenState();
+}
+
+class _SignInScreenState extends State<SignInScreen> {
+  late TextEditingController _emailController;
+  late TextEditingController _passwordController;
+
+  @override
+  void initState() {
+    super.initState();
+    _emailController = TextEditingController();
+    _passwordController = TextEditingController();
+  }
+
+  @override
+  void dispose() {
+    _emailController.dispose();
+    _passwordController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     final authProvider = Provider.of<AuthProvider>(context);
-    final TextEditingController _emailController = TextEditingController();
-    final TextEditingController _passwordController = TextEditingController();
 
     return Scaffold(
       backgroundColor: Colors.black,
@@ -42,9 +63,9 @@ class SignInScreen extends StatelessWidget {
                   width: double.infinity,
                   child: ElevatedButton(
                     onPressed: () {
-                      authProvider.loginUser(
-                        email: _emailController.text.trim(),
-                        password: _passwordController.text,
+                      authProvider.login(
+                        _emailController.text.trim(),
+                        _passwordController.text,
                       );
                     },
                     style: ElevatedButton.styleFrom(
@@ -73,7 +94,7 @@ class SignInScreen extends StatelessWidget {
                   onPressed: () {
                     Navigator.pushReplacement(
                       context,
-                      MaterialPageRoute(builder: (_) => const SignUpScreen()),
+                      MaterialPageRoute(builder: (_) => SignUpScreen()),
                     );
                   },
                   child: Text(

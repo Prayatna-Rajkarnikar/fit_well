@@ -11,7 +11,7 @@ class MyTextTheme {
       color: AppColors.myBlack,
     ),
     bodyMedium: TextStyle().copyWith(
-      fontSize: isWear ? 8.0 : 16.0,
+      fontSize: isWear ? 10.0 : 16.0,
       fontWeight: FontWeight.w400,
       color: AppColors.myBlack,
     ),
@@ -29,7 +29,7 @@ class MyTextTheme {
       color: AppColors.myWhite,
     ),
     bodyMedium: TextStyle().copyWith(
-      fontSize: isWear ? 8.0 : 16.0,
+      fontSize: isWear ? 10.0 : 16.0,
       fontWeight: FontWeight.w400,
       color: AppColors.myWhite,
     ),

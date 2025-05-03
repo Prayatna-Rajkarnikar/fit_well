@@ -1,71 +1,64 @@
-import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
+import '../models/user_model.dart';
+import 'package:watch_connectivity/watch_connectivity.dart';
+
+import '../service/auth_service.dart';
 
 class AuthProvider with ChangeNotifier {
-  final String _baseUrl =
-      'http://100.64.205.1:3000'; // Replace with your backend IP
-
+  final AuthService _authService = AuthService();
   bool _isLoading = false;
-  bool get isLoading => _isLoading;
+  UserModel? _user;
 
-  Future<void> registerUser({
-    required String name,
-    required String email,
-    required String password,
-  }) async {
+  bool get isLoading => _isLoading;
+  UserModel? get user => _user;
+
+  Future<void> login(String email, String password) async {
     _isLoading = true;
     notifyListeners();
 
     try {
-      final url = Uri.parse('$_baseUrl/auth/register');
-      final response = await http.post(
-        url,
-        headers: {'Content-Type': 'application/json'},
-        body: jsonEncode({'name': name, 'email': email, 'password': password}),
-      );
-
-      if (response.statusCode == 201) {
-        debugPrint('✅ Registered successfully');
-      } else {
-        debugPrint('❌ Registration failed: ${response.body}');
-      }
+      final loggedInUser = await _authService.loginUser(email, password);
+      _user = loggedInUser;
+      await _sendUserDataToWatch(_user!);
     } catch (e) {
-      debugPrint('❌ Error: $e');
+      debugPrint("Login error: $e");
     }
 
     _isLoading = false;
     notifyListeners();
   }
 
-  Future<void> loginUser({
-    required String email,
-    required String password,
-  }) async {
+  Future<void> register(String name, String email, String password) async {
     _isLoading = true;
     notifyListeners();
 
     try {
-      final url = Uri.parse('$_baseUrl/auth/login');
-      final response = await http.post(
-        url,
-        headers: {'Content-Type': 'application/json'},
-        body: jsonEncode({'email': email, 'password': password}),
-      );
-
-      if (response.statusCode == 200) {
-        final data = jsonDecode(response.body);
-        debugPrint('✅ Login success. Token: ${data['token']}');
-
-        // You can store the token with SharedPreferences if needed
-      } else {
-        debugPrint('❌ Login failed: ${response.body}');
-      }
+      await _authService.registerUser(name, email, password);
     } catch (e) {
-      debugPrint('❌ Error: $e');
+      debugPrint("Register error: $e");
     }
 
     _isLoading = false;
     notifyListeners();
+  }
+
+  Future<void> _sendUserDataToWatch(UserModel user) async {
+    final watch = WatchConnectivity();
+    final prefs = await SharedPreferences.getInstance();
+    final token = prefs.getString('token');
+
+    try {
+      final userData = {
+        'id': user.id,
+        'name': user.name,
+        'email': user.email,
+        'weightKg': user.weightKg,
+        'token': token
+      };
+      await watch.sendMessage(userData);
+    } catch (e) {
+      debugPrint('Failed to send to watch: $e');
+    }
   }
 }
