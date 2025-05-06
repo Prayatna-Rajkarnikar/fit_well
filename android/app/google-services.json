@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "752089811335",
+    "project_id": "fit-well-54a1b",
+    "storage_bucket": "fit-well-54a1b.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:752089811335:android:94faf5efec91cd62dcab22",
+        "android_client_info": {
+          "package_name": "com.example.fit_well"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAIy64iPvbRNSJwnfVJZgEcalfIvxvnYZ0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
