@@ -1,4 +1,5 @@
 import 'package:fit_well/screens/signup_screen.dart';
+import 'package:fit_well/utils/custom_themes/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -34,76 +35,93 @@ class _SignInScreenState extends State<SignInScreen> {
     final authProvider = Provider.of<AuthProvider>(context);
 
     return Scaffold(
-      backgroundColor: Colors.black,
-      body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 24.0),
-        child: Center(
-          child: SingleChildScrollView(
-            child: Column(
-              children: [
-                const Text(
-                  'Log in',
-                  style: TextStyle(
-                    fontSize: 24,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
-                  ),
+      backgroundColor: AppColors.myBlack,
+      body: Center(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 48),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Text(
+                'Log in',
+                style: TextStyle(
+                  fontSize: 28,
+                  fontWeight: FontWeight.bold,
+                  color: AppColors.myWhite,
+                  letterSpacing: 1.5,
                 ),
-                const SizedBox(height: 32),
-                _buildLabel("Email"),
-                _buildInputField(controller: _emailController),
-                const SizedBox(height: 16),
-                _buildLabel("Password"),
-                _buildInputField(
-                  controller: _passwordController,
-                  obscure: true,
-                ),
-                const SizedBox(height: 24),
-                SizedBox(
-                  width: double.infinity,
-                  child: ElevatedButton(
-                    onPressed: () {
-                      authProvider.login(
-                        _emailController.text.trim(),
-                        _passwordController.text,
-                      );
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.green[600],
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      padding: const EdgeInsets.symmetric(vertical: 16),
-                    ),
-                    child:
-                        authProvider.isLoading
-                            ? const CircularProgressIndicator(
-                              color: Colors.white,
-                            )
-                            : const Text(
-                              'Submit',
-                              style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                  ),
-                ),
-                const SizedBox(height: 16),
-                TextButton(
+              ),
+              const SizedBox(height: 24),
+
+              _buildLabel("Email"),
+              const SizedBox(height: 8),
+              _buildInputField(controller: _emailController, hintText: "Enter your email"),
+              const SizedBox(height: 16),
+
+              _buildLabel("Password"),
+              const SizedBox(height: 8),
+              _buildInputField(
+                controller: _passwordController,
+                obscure: true,
+                hintText: "Enter your password",
+              ),
+              const SizedBox(height: 24),
+
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton(
                   onPressed: () {
-                    Navigator.pushReplacement(
-                      context,
-                      MaterialPageRoute(builder: (_) => SignUpScreen()),
+                    authProvider.login(
+                      _emailController.text.trim(),
+                      _passwordController.text,
                     );
                   },
-                  child: Text(
-                    "Don't have an account?",
-                    style: TextStyle(color: Colors.green[400]),
+                  style: ElevatedButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(vertical: 16),
+                    backgroundColor: AppColors.myGreen,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(14),
+                    ),
                   ),
+                  child: authProvider.isLoading
+                      ? const CircularProgressIndicator(color: AppColors.myWhite)
+                      : const Text(
+                          'Submit',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w600,
+                            color: AppColors.myWhite,
+                          ),
+                        ),
                 ),
-              ],
-            ),
+              ),
+              const SizedBox(height: 24),
+
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    "Don't have an account? ",
+                    style: TextStyle(color: AppColors.myLightGray),
+                  ),
+                  GestureDetector(
+                    onTap: () {
+                      Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(builder: (_) => const SignUpScreen()),
+                      );
+                    },
+                    child: Text(
+                      "Sign Up",
+                      style: TextStyle(
+                        color: AppColors.myGreen,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ],
           ),
         ),
       ),
@@ -113,26 +131,37 @@ class _SignInScreenState extends State<SignInScreen> {
   Widget _buildLabel(String text) {
     return Align(
       alignment: Alignment.centerLeft,
-      child: Text(text, style: const TextStyle(color: Colors.white)),
+      child: Text(
+        text,
+        style: const TextStyle(
+          color: AppColors.myWhite,
+          fontSize: 14,
+          fontWeight: FontWeight.w500,
+        ),
+      ),
     );
   }
 
   Widget _buildInputField({
     required TextEditingController controller,
     bool obscure = false,
+    String hintText = '',
   }) {
     return TextField(
       controller: controller,
       obscureText: obscure,
       decoration: InputDecoration(
+        hintText: hintText,
+        hintStyle: TextStyle(color: AppColors.myLightGray),
         filled: true,
-        fillColor: Colors.grey[800],
+        fillColor: AppColors.myGray.withOpacity(0.2),
+        contentPadding: const EdgeInsets.symmetric(vertical: 16, horizontal: 16),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
           borderSide: BorderSide.none,
         ),
       ),
-      style: const TextStyle(color: Colors.white),
+      style: const TextStyle(color: AppColors.myWhite),
     );
   }
 }
