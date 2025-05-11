@@ -1,8 +1,12 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
     <application
         android:label="fit_well"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
+
+
         <activity
             android:name=".MainActivity"
             android:exported="true"
@@ -30,6 +34,20 @@
         <meta-data
             android:name="flutterEmbedding"
             android:value="2" />
+
+        <service android:name="com.google.firebase.messaging.FirebaseMessagingService">
+            <intent-filter>
+                <action android:name="com.google.firebase.MESSAGING_EVENT"/>
+            </intent-filter>
+        </service>
+
+        <service android:name="com.google.firebase.components.ComponentDiscoveryService"
+            android:exported="false">
+            <meta-data
+                android:name="com.google.firebase.components:com.google.firebase.messaging.FirebaseMessagingRegistrar"
+                android:value="com.google.firebase.components.ComponentRegistrar" />
+        </service>
+
     </application>
     <!-- Required to query activities that can process text, see:
          https://developer.android.com/training/package-visibility and

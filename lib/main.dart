@@ -1,5 +1,7 @@
+import 'package:firebase_core/firebase_core.dart';
 import 'package:fit_well/providers/calorie_provider.dart';
 import 'package:fit_well/providers/watch_provider.dart';
+import 'package:fit_well/service/notification_service.dart';
 import 'package:flutter/material.dart';
 import 'package:fit_well/screens/signin_screen.dart';
 import 'package:fit_well/screens/wear_home_screen.dart';
@@ -13,6 +15,23 @@ late final bool isWear;
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  // Initialize Firebase
+  try {
+    await Firebase.initializeApp();
+    print("✅ Firebase initialized successfully");
+  } catch (e) {
+    print("❌ Firebase initialization failed: $e");
+  }
+
+  try {
+    await NotificationService.initialize();
+    print("✅ NotificationService initialized");
+  } catch (e) {
+    print("❌ NotificationService initialization failed: $e");
+  }
+
+  // Check for Wear OS
   isWear = (await IsWear().check()) ?? false;
 
   runApp(
