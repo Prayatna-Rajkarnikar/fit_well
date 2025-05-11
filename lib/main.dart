@@ -2,12 +2,14 @@ import 'package:fit_well/providers/calorie_provider.dart';
 import 'package:fit_well/providers/watch_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:fit_well/screens/signin_screen.dart';
+import 'package:fit_well/screens/mobile_add_calories_screen.dart';
 import 'package:fit_well/screens/wear_home_screen.dart';
 import 'package:fit_well/providers/theme_provider.dart';
 import 'package:fit_well/providers/auth_provider.dart';
 import 'package:fit_well/utils/theme.dart';
 import 'package:is_wear/is_wear.dart';
 import 'package:provider/provider.dart';
+
 
 late final bool isWear;
 
@@ -38,7 +40,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: "Fit Well",
-      home: isWear ? const WearHomeScreen() : const SignInScreen(),
+      home: isWear ? const WearHomeScreen() :  AddCalorieScreen(),
       themeMode: themeProvider.themeMode,
       theme: MyTheme.lightTheme(isWear: isWear),
       darkTheme: MyTheme.darkTheme(isWear: isWear),

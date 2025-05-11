@@ -41,6 +41,8 @@ dependencies:
   http: ^1.3.0
   shared_preferences: ^2.5.3
 
+  font_awesome_flutter: ^10.7.0 # <- add this line or the latest version
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
