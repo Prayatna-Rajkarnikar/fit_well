@@ -1,6 +1,8 @@
-import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:timezone/data/latest.dart' as tz;
+import 'package:timezone/timezone.dart' as tz;
 
 class NotificationService {
   static final FirebaseMessaging _messaging = FirebaseMessaging.instance;
@@ -57,11 +59,43 @@ class NotificationService {
           importance: Importance.max,
           priority: Priority.high,
         );
+
     const NotificationDetails details = NotificationDetails(
       android: androidDetails,
     );
 
     await _flutterLocalNotificationsPlugin.show(0, title, body, details);
+  }
+
+  static Future<void> scheduleWaterReminder() async {
+    tz.initializeTimeZones();
+    final scheduledTime = tz.TZDateTime.now(
+      tz.local,
+    ).add(const Duration(hours: 2));
+
+    const AndroidNotificationDetails androidDetails =
+        AndroidNotificationDetails(
+          'water_reminder_channel',
+          'Water Reminders',
+          channelDescription: 'Reminders to stay hydrated',
+          importance: Importance.max,
+          priority: Priority.high,
+        );
+
+    const NotificationDetails details = NotificationDetails(
+      android: androidDetails,
+    );
+
+    await _flutterLocalNotificationsPlugin.zonedSchedule(
+      1,
+      '💧 Time to hydrate!',
+      'You added 5L+ earlier. Stay hydrated and take another sip!',
+      scheduledTime,
+      details,
+
+      androidScheduleMode:
+          AndroidScheduleMode.exactAllowWhileIdle, // ✅ required
+    );
   }
 }
 
