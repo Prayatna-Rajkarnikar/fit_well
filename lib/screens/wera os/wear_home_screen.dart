@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:wear_plus/wear_plus.dart';
 
-import '../providers/theme_provider.dart';
-import '../providers/watch_provider.dart';
+import '../../providers/theme_provider.dart';
+import '../../providers/watch_provider.dart';
 import 'wear_calorie_screen.dart';
 
 class WearHomeScreen extends StatefulWidget {
@@ -64,8 +64,14 @@ class _WearHomeScreenState extends State<WearHomeScreen> {
                   children: [
                     Card(
                       child: ListTile(
-                        title: Text('Calories Burned', style: Theme.of(context).textTheme.headlineLarge,),
-                        trailing: Icon(Icons.local_fire_department_rounded, size: 20.0,),
+                        title: Text(
+                          'Calories Burned',
+                          style: Theme.of(context).textTheme.headlineLarge,
+                        ),
+                        trailing: Icon(
+                          Icons.local_fire_department_rounded,
+                          size: 20.0,
+                        ),
                         onTap: () {
                           Navigator.push(
                             context,
@@ -78,17 +84,23 @@ class _WearHomeScreenState extends State<WearHomeScreen> {
                     ),
                     Card(
                       child: ListTile(
-                        title: Text('Water Log', style: Theme.of(context).textTheme.headlineLarge,),
-                        trailing: Icon(Icons.water_drop_rounded, size: 20.0,),
+                        title: Text(
+                          'Water Log',
+                          style: Theme.of(context).textTheme.headlineLarge,
+                        ),
+                        trailing: Icon(Icons.water_drop_rounded, size: 20.0),
                       ),
                     ),
                     Card(
                       child: ListTile(
-                        title: Text('Timer', style: Theme.of(context).textTheme.headlineLarge,),
-                        trailing: Icon(Icons.alarm_rounded, size: 20.0,),
+                        title: Text(
+                          'Timer',
+                          style: Theme.of(context).textTheme.headlineLarge,
+                        ),
+                        trailing: Icon(Icons.alarm_rounded, size: 20.0),
                       ),
                     ),
-                    SizedBox(height: 28.0,)
+                    SizedBox(height: 28.0),
                   ],
                 ),
               ),

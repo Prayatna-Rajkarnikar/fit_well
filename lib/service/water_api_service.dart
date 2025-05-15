@@ -17,12 +17,12 @@ class WaterApiService {
     return null;
   }
 
-  Future<bool> addIntake(String userId, double liters) async {
+  Future<bool> addIntake(String userId, int amountMl) async {
     final url = Uri.parse('$baseUrl/api/water/add');
     final response = await http.post(
       url,
       headers: {"Content-Type": "application/json"},
-      body: json.encode({"userId": userId, "amountLiters": liters}),
+      body: json.encode({"userId": userId, "amountMl": amountMl}),
     );
     return response.statusCode == 201;
   }

@@ -1,4 +1,7 @@
+import 'package:fit_well/providers/water_provider.dart';
+import 'package:fit_well/screens/mobile/mobile_water_reminder_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class AddWaterReminder extends StatefulWidget {
   const AddWaterReminder({Key? key}) : super(key: key);
@@ -8,7 +11,7 @@ class AddWaterReminder extends StatefulWidget {
 }
 
 class _AddWaterReminderState extends State<AddWaterReminder> {
-  double waterAmount = 500; // in milliliters
+  double waterAmount = 500;
 
   @override
   Widget build(BuildContext context) {
@@ -30,7 +33,16 @@ class _AddWaterReminderState extends State<AddWaterReminder> {
         padding: const EdgeInsets.all(24.0),
         child: Column(
           children: [
-            const SizedBox(height: 100),
+            const SizedBox(height: 50),
+            const Text(
+              'Set Water Goal',
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 20,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+            const SizedBox(height: 20),
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 20),
               decoration: BoxDecoration(
@@ -43,9 +55,10 @@ class _AddWaterReminderState extends State<AddWaterReminder> {
                   Text(
                     waterAmount.toInt().toString(),
                     style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 24,
-                        fontWeight: FontWeight.w500),
+                      color: Colors.white,
+                      fontSize: 24,
+                      fontWeight: FontWeight.w500,
+                    ),
                   ),
                   const SizedBox(width: 10),
                   const Text(
@@ -55,11 +68,48 @@ class _AddWaterReminderState extends State<AddWaterReminder> {
                 ],
               ),
             ),
+            const SizedBox(height: 30),
+            Slider(
+              value: waterAmount,
+              min: 100,
+              max: 2000,
+              divisions: 38,
+              activeColor: Colors.green,
+              inactiveColor: Colors.white24,
+              label: "${waterAmount.toInt()} ml",
+              onChanged: (value) {
+                setState(() {
+                  waterAmount = value;
+                });
+              },
+            ),
             const Spacer(),
             GestureDetector(
               onTap: () {
-                // Add your saving/reminder logic here
-                Navigator.pop(context);
+                final waterProvider = Provider.of<WaterProvider>(
+                  context,
+                  listen: false,
+                );
+                waterProvider.setGoal(waterAmount.toInt());
+
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text(
+                      'Goal set for ${waterAmount.toInt()} ml of water!',
+                    ),
+                    backgroundColor: Colors.green,
+                  ),
+                );
+
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(
+                    builder:
+                        (_) => WaterReminderScreen(
+                          userId: 'user_123',
+                        ), // Replace with your actual userId
+                  ),
+                );
               },
               child: Container(
                 width: double.infinity,
@@ -79,25 +129,6 @@ class _AddWaterReminderState extends State<AddWaterReminder> {
             const SizedBox(height: 30),
           ],
         ),
-      ),
-      bottomNavigationBar: BottomNavigationBar(
-        backgroundColor: Colors.grey[900],
-        selectedItemColor: Colors.green,
-        unselectedItemColor: Colors.white70,
-        items: const [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: 'Home',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.bar_chart),
-            label: 'Report',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.person),
-            label: 'Profile',
-          ),
-        ],
       ),
     );
   }

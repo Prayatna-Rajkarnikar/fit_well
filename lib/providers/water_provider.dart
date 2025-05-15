@@ -1,43 +1,49 @@
-import 'package:fit_well/service/notification_service.dart';
-import 'package:fit_well/service/water_api_service.dart';
 import 'package:flutter/material.dart';
-import '../models/water_intake_model.dart';
+
+class IntakeData {
+  int totalIntakeMl;
+  int goalMl;
+  IntakeData({required this.totalIntakeMl, required this.goalMl});
+}
 
 class WaterProvider with ChangeNotifier {
-  final WaterApiService apiService;
-  WaterIntakeModel? _intakeData;
-  bool _loading = false;
+  IntakeData? intakeData;
+  bool loading = false;
 
-  WaterProvider({required this.apiService});
-
-  WaterIntakeModel? get intakeData => _intakeData;
-  bool get loading => _loading;
-
+  // Initialize or load intake
   Future<void> loadIntake(String userId) async {
-    _loading = true;
+    loading = true;
     notifyListeners();
-    _intakeData = await apiService.fetchDailyIntake(userId);
-    _loading = false;
+
+    await Future.delayed(const Duration(seconds: 1));
+    // If intakeData is null, create default, else keep existing
+    intakeData ??= IntakeData(totalIntakeMl: 0, goalMl: 2500);
+
+    loading = false;
     notifyListeners();
   }
 
-  Future<void> addWater(String userId, double liters) async {
-    // First, check the current intake data
-    final lastIntake = _intakeData?.lastIntakeTime;
+  // Add water intake
+  Future<void> addWater(String userId, int amount) async {
+    if (intakeData != null) {
+      intakeData!.totalIntakeMl += amount;
+      notifyListeners();
 
-    // Define a cooldown period (e.g., 1 hour)
-    final bool shouldNotify =
-        lastIntake == null ||
-        DateTime.now().difference(lastIntake) > const Duration(hours: 1);
-
-    final success = await apiService.addIntake(userId, liters);
-    if (success) {
-      await loadIntake(userId); // refresh data
-
-      // Trigger reminder only if enough time has passed
-      if (liters >= 5.0 && shouldNotify) {
-        await NotificationService.scheduleWaterReminder();
+      if (intakeData!.totalIntakeMl >= intakeData!.goalMl) {
+        debugPrint(
+          '🎯 Goal met: ${intakeData!.totalIntakeMl} / ${intakeData!.goalMl}',
+        );
       }
     }
+  }
+
+  // Set or update water goal
+  void setGoal(int goalMl) {
+    if (intakeData == null) {
+      intakeData = IntakeData(totalIntakeMl: 0, goalMl: goalMl);
+    } else {
+      intakeData!.goalMl = goalMl;
+    }
+    notifyListeners();
   }
 }

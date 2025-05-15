@@ -1,7 +1,11 @@
+import 'package:fit_well/screens/mobile/mobile_add_calories_screen.dart';
 import 'package:flutter/material.dart';
+// <-- Import your AddCalorieScreen here
 
 class CaloriesScreen extends StatelessWidget {
-  const CaloriesScreen({super.key});
+  final double calories;
+
+  const CaloriesScreen({Key? key, required this.calories}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -14,44 +18,28 @@ class CaloriesScreen extends StatelessWidget {
         currentIndex: 0,
         onTap: (index) {},
         items: const [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: 'Home',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.bar_chart),
-            label: 'Report',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.person),
-            label: 'Profile',
-          ),
+          BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
+          BottomNavigationBarItem(icon: Icon(Icons.bar_chart), label: 'Report'),
+          BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profile'),
         ],
       ),
       body: SafeArea(
         child: Column(
           children: [
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 20.0),
-              child: Row(
-                children: [
-                  Icon(Icons.arrow_back, color: Colors.white),
-                  SizedBox(width: 10),
-                  Text(
-                    'Add Calorie',
-                    style: TextStyle(color: Colors.white, fontSize: 18),
-                  ),
-                ],
+              padding: const EdgeInsets.symmetric(
+                horizontal: 16.0,
+                vertical: 20.0,
               ),
             ),
             const Spacer(),
             Column(
               children: [
                 RichText(
-                  text: const TextSpan(
+                  text: TextSpan(
                     children: [
                       TextSpan(
-                        text: '500',
+                        text: calories.toStringAsFixed(0),
                         style: TextStyle(
                           fontSize: 60,
                           fontWeight: FontWeight.bold,
@@ -60,10 +48,7 @@ class CaloriesScreen extends StatelessWidget {
                       ),
                       TextSpan(
                         text: ' kcal',
-                        style: TextStyle(
-                          fontSize: 24,
-                          color: Colors.green,
-                        ),
+                        style: TextStyle(fontSize: 24, color: Colors.green),
                       ),
                     ],
                   ),
@@ -82,7 +67,14 @@ class CaloriesScreen extends StatelessWidget {
                 width: double.infinity,
                 height: 60,
                 child: ElevatedButton(
-                  onPressed: () {},
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => AddCalorieScreen(),
+                      ),
+                    );
+                  },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.green,
                     shape: RoundedRectangleBorder(

@@ -1,18 +1,18 @@
 class WaterIntakeModel {
-  final double totalIntakeLiters;
-  final double goalLiters;
-
+  final int totalIntakeMl;
+  final int goalMl;
   final DateTime? lastIntakeTime;
+
   WaterIntakeModel({
-    required this.totalIntakeLiters,
-    required this.goalLiters,
+    required this.totalIntakeMl,
+    required this.goalMl,
     this.lastIntakeTime,
   });
 
   factory WaterIntakeModel.fromJson(Map<String, dynamic> json) {
     return WaterIntakeModel(
-      totalIntakeLiters: (json['totalIntakeLiters'] ?? 0).toDouble(),
-      goalLiters: (json['goalLiters'] ?? 2).toDouble(),
+      totalIntakeMl: json['totalIntakeMl'] ?? 0,
+      goalMl: json['goalMl'] ?? 2000,
       lastIntakeTime:
           json['lastIntakeTime'] != null
               ? DateTime.parse(json['lastIntakeTime'])
