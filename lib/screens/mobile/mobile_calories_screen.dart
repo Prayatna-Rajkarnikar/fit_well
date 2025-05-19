@@ -1,6 +1,9 @@
 import 'package:fit_well/screens/mobile/mobile_add_calories_screen.dart';
 import 'package:fit_well/utils/custom_themes/colors.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+
+import '../../providers/theme_provider.dart';
 
 class CaloriesScreen extends StatelessWidget {
   final double calories;
@@ -10,24 +13,23 @@ class CaloriesScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final themeProvider = Provider.of<ThemeProvider>(context);
+
 
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.transparent, // optional: transparent app bar
-        elevation: 0, // remove shadow
         leading: IconButton(
           icon: Icon(Icons.arrow_back, color: AppColors.myGreen),
           onPressed: () {
             Navigator.pop(
               context,
-            ); // Go back to the previous screen (usually home)
+            );
           },
         ),
       ),
       body: SafeArea(
         child: Column(
           children: [
-            SizedBox(height: 40),
             const Spacer(),
             Column(
               children: [
@@ -73,7 +75,6 @@ class CaloriesScreen extends StatelessWidget {
                       ),
                     );
                   },
-                  style: ElevatedButton.styleFrom(),
                   child: Text('Add'),
                 ),
               ),

@@ -5,9 +5,12 @@ import 'package:fit_well/screens/mobile/mobile_report_screen.dart';
 import 'package:fit_well/screens/mobile/mobile_set_timer_screen.dart';
 import 'package:fit_well/screens/mobile/mobile_water_reminder_screen.dart';
 import 'package:fit_well/screens/mobile/profile_screen.dart';
+import 'package:fit_well/utils/custom_themes/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:provider/provider.dart';
+
+import 'bottom_nav_bar.dart';
 
 class HomeScreen extends StatefulWidget {
   final String userId;
@@ -20,23 +23,20 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   int _currentIndex = 0;
 
-  final List<Widget> _screens = [];
+  late final List<Widget> _screens;
 
   @override
   void initState() {
     super.initState();
-
-    _screens.addAll([
+    _screens = [
       HomeScreenContent(userId: widget.userId),
       ReportScreen(),
       const ProfileScreen(),
-    ]);
+    ];
   }
 
-  void _onTap(int index) {
-    setState(() {
-      _currentIndex = index;
-    });
+  void _onTabChanged(int index) {
+    setState(() => _currentIndex = index);
   }
 
   @override
@@ -46,21 +46,14 @@ class _HomeScreenState extends State<HomeScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          ['Fit well', 'Report', 'Profile'][_currentIndex],
-          style: theme.textTheme.headlineSmall,
+          ['Home', 'Report', 'Profile'][_currentIndex],
+          style: theme.textTheme.headlineLarge,
         ),
-        elevation: 1,
       ),
       body: _screens[_currentIndex],
-      bottomNavigationBar: BottomNavigationBar(
+      bottomNavigationBar: BottomNavBar(
         currentIndex: _currentIndex,
-        showUnselectedLabels: true,
-        items: const [
-          BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
-          BottomNavigationBarItem(icon: Icon(Icons.bar_chart), label: 'Report'),
-          BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profile'),
-        ],
-        onTap: _onTap,
+        onTap: _onTabChanged,
       ),
     );
   }
@@ -72,8 +65,6 @@ class HomeScreenContent extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final isDark = Provider.of<ThemeProvider>(context).isDarkMode;
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
@@ -87,12 +78,12 @@ class HomeScreenContent extends StatelessWidget {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => CaloriesScreen(calories: 0),
+                  builder: (_) => CaloriesScreen(calories: 0),
                 ),
               );
             },
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: 20),
           _buildCard(
             context,
             title: 'Water Log',
@@ -102,17 +93,16 @@ class HomeScreenContent extends StatelessWidget {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder:
-                        (_) => ChangeNotifierProvider(
-                          create: (_) => WaterProvider(),
-                          child: WaterReminderScreen(userId: userId),
-                        ),
+                    builder: (_) => ChangeNotifierProvider(
+                      create: (_) => WaterProvider(),
+                      child: WaterReminderScreen(userId: userId),
+                    ),
                   ),
                 );
               });
             },
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: 20),
           _buildCard(
             context,
             title: 'Timer',
@@ -120,7 +110,9 @@ class HomeScreenContent extends StatelessWidget {
             onTap: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => SetTimerScreen()),
+                MaterialPageRoute(
+                  builder: (_) => SetTimerScreen(),
+                ),
               );
             },
           ),
@@ -130,12 +122,12 @@ class HomeScreenContent extends StatelessWidget {
   }
 
   Widget _buildCard(
-    BuildContext context, {
-    required String title,
-    required IconData icon,
-    void Function()? onTap,
-  }) {
-    final theme = Theme.of(context);
+      BuildContext context, {
+        required String title,
+        required IconData icon,
+        void Function()? onTap,
+      }) {
+    final themeProvider = Provider.of<ThemeProvider>(context);
     return Card(
       elevation: 2,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
@@ -149,8 +141,9 @@ class HomeScreenContent extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              Text(title, style: theme.textTheme.headlineSmall),
-              Icon(icon, size: 36, color: theme.colorScheme.primary),
+              Text(title, style: Theme.of(context).textTheme.headlineLarge,
+              ),
+              Icon(icon, size: 36, color: themeProvider.isDarkMode? AppColors.myWhite : AppColors.myBlack ),
             ],
           ),
         ),

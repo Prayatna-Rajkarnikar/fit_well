@@ -14,14 +14,11 @@ class ProfileScreen extends StatelessWidget {
     final user = authProvider.user;
 
     return Scaffold(
-      backgroundColor: AppColors.myBlack,
       appBar: AppBar(
-        title: const Text('Profile'),
-        backgroundColor: AppColors.myBlack,
-        elevation: 0,
+
         actions: [
           IconButton(
-            icon: const Icon(Icons.settings, color: AppColors.myWhite),
+            icon:  Icon(Icons.settings, color: themeProvider.isDarkMode ? AppColors.myWhite : AppColors.myBlack),
             onPressed: () {
               _showSettingsDialog(context, themeProvider);
             },
@@ -29,18 +26,18 @@ class ProfileScreen extends StatelessWidget {
         ],
       ),
       body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+        padding: const EdgeInsets.symmetric(horizontal: 20),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Center(
               child: CircleAvatar(
                 radius: 40,
-                backgroundColor: AppColors.myGreen.withOpacity(0.2),
+                backgroundColor: AppColors.myGreen,
                 child: const Icon(
                   Icons.person,
                   size: 40,
-                  color: AppColors.myGreen,
+                  color: AppColors.myWhite,
                 ),
               ),
             ),
@@ -51,7 +48,7 @@ class ProfileScreen extends StatelessWidget {
                 user?.name ?? 'No Name',
                 style: Theme.of(
                   context,
-                ).textTheme.headlineSmall?.copyWith(color: AppColors.myWhite),
+                ).textTheme.bodyMedium,
               ),
             ),
             const SizedBox(height: 8),
@@ -61,23 +58,23 @@ class ProfileScreen extends StatelessWidget {
                 user?.email ?? 'No Email',
                 style: Theme.of(
                   context,
-                ).textTheme.bodyMedium?.copyWith(color: AppColors.myLightGray),
+                ).textTheme.bodyMedium,
               ),
             ),
             const SizedBox(height: 24),
 
             _buildLabel("Full Name", context),
-            _buildInfoBox(user?.name ?? 'No Name'),
+            _buildInfoBox(user?.name ?? 'No Name', context),
 
             const SizedBox(height: 16),
 
             _buildLabel("Email", context),
-            _buildInfoBox(user?.email ?? 'No Email'),
+            _buildInfoBox(user?.email ?? 'No Email', context),
 
             const SizedBox(height: 16),
 
             _buildLabel("Weight (kg)", context),
-            _buildInfoBox(user?.weightKg.toString() ?? 'Not Available'),
+            _buildInfoBox(user?.weightKg.toString() ?? 'Not Available', context),
           ],
         ),
       ),
@@ -85,23 +82,27 @@ class ProfileScreen extends StatelessWidget {
   }
 
   Widget _buildLabel(String label, BuildContext context) {
+    final themeProvider = Provider.of<ThemeProvider>(context);
+
     return Text(
       label,
       style: Theme.of(
         context,
-      ).textTheme.bodyMedium?.copyWith(color: AppColors.myWhite),
+      ).textTheme.bodyMedium?.copyWith(color: themeProvider.isDarkMode? AppColors.myWhite : AppColors.myBlack),
     );
   }
 
-  Widget _buildInfoBox(String text) {
+  Widget _buildInfoBox(String text,BuildContext context ) {
+    final themeProvider = Provider.of<ThemeProvider>(context);
+
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 16),
       decoration: BoxDecoration(
-        color: AppColors.myGray.withOpacity(0.2),
+        color: themeProvider.isDarkMode ? AppColors.myGray : AppColors.myLightGray,
         borderRadius: BorderRadius.circular(12),
       ),
-      child: Text(text, style: const TextStyle(color: AppColors.myWhite)),
+      child: Text(text, style: TextStyle(color: themeProvider.isDarkMode ? AppColors.myWhite : AppColors.myBlack)),
     );
   }
 
@@ -110,31 +111,44 @@ class ProfileScreen extends StatelessWidget {
       context: context,
       builder:
           (context) => AlertDialog(
-            backgroundColor: AppColors.myBlack,
-            title: const Text(
+            backgroundColor:
+                themeProvider.isDarkMode
+                    ? AppColors.myGray
+                    : AppColors.myLightGray,
+
+            title: Text(
               'Settings',
-              style: TextStyle(color: AppColors.myWhite),
+              style: Theme.of(context).textTheme.headlineLarge,
             ),
             content: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const Text(
-                  'Dark Theme',
-                  style: TextStyle(color: AppColors.myWhite),
+                Text(
+                  'Change theme',
+                  style: Theme.of(context).textTheme.bodyMedium,
                 ),
-                Switch(
-                  value: themeProvider.isDarkMode,
-                  onChanged: (value) {},
-                  activeColor: AppColors.myGreen,
+                Consumer<ThemeProvider>(
+                  builder: (context, themeProvider, child) {
+                    final icon =
+                        themeProvider.isDarkMode
+                            ? Icons.dark_mode
+                            : Icons.light_mode;
+                    return IconButton(
+                      icon: Icon(icon, size: 24),
+                      onPressed: () {
+                        themeProvider.toggleTheme(!themeProvider.isDarkMode);
+                      },
+                    );
+                  },
                 ),
               ],
             ),
             actions: [
               TextButton(
                 onPressed: () => Navigator.pop(context),
-                child: const Text(
+                child: Text(
                   'Close',
-                  style: TextStyle(color: AppColors.myWhite),
+                  style: Theme.of(context).textTheme.bodyMedium,
                 ),
               ),
             ],
