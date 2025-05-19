@@ -1,7 +1,8 @@
+import 'package:fit_well/providers/calorie_provider.dart';
 import 'package:fit_well/providers/theme_provider.dart';
+import 'package:fit_well/providers/watch_provider.dart';
 import 'package:fit_well/utils/custom_themes/colors.dart';
 import 'package:flutter/material.dart';
-import 'package:fit_well/screens/mobile/mobile_calories_screen.dart';
 import 'package:provider/provider.dart';
 
 class AddCalorieScreen extends StatefulWidget {
@@ -10,45 +11,123 @@ class AddCalorieScreen extends StatefulWidget {
 }
 
 class _AddCalorieScreenState extends State<AddCalorieScreen> {
-  String selectedActivity = 'Running';
+  String? selectedActivity;
   int selectedHour = 1;
-  int selectedMinute = 10;
-  int weight = 70;
+  int weight = 0;
 
-  double? caloriesBurned;
+  @override
+  void initState() {
+    super.initState();
+    Provider.of<CalorieProvider>(context, listen: false).getAllActivities();
 
-  double calculateCalories(
-    String activity,
-    int weightKg,
-    int hours,
-    int minutes,
-  ) {
-    final Map<String, double> metValues = {
-      'Running': 9.8,
-      'Walking': 3.5,
-      'Cycling': 7.5,
-    };
+    final watchUser = Provider.of<WatchProvider>(context, listen: false).userData;
+    if (watchUser['weightKg'] != null) {
+      weight = watchUser['weightKg'].toInt();
+    }
+  }
 
-    double met = metValues[activity] ?? 1.0;
-    double durationInHours = hours + (minutes / 60.0);
+  void _showUpdateWeightDialog(BuildContext context) {
+    final TextEditingController _weightController = TextEditingController();
 
-    return met * weightKg * durationInHours;
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        contentPadding: const EdgeInsets.all(16),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Text("Update Weight"),
+            const SizedBox(height: 10),
+            TextField(
+              controller: _weightController,
+              keyboardType: TextInputType.number,
+              decoration: const InputDecoration(
+                hintText: "Enter new weight (kg)",
+              ),
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                TextButton(
+                  onPressed: () => Navigator.pop(context),
+                  child: Icon(Icons.cancel, size: 20),
+                ),
+                TextButton(
+                  onPressed: () async {
+                    final newWeight = double.tryParse(_weightController.text);
+                    if (newWeight != null) {
+                      await Provider.of<CalorieProvider>(
+                        context,
+                        listen: false,
+                      ).updateWeight(newWeight);
+                      Provider.of<WatchProvider>(
+                        context,
+                        listen: false,
+                      ).updateWeight(newWeight);
+                      setState(() {
+                        weight = newWeight.toInt();
+                      });
+                      Navigator.pop(context);
+                    }
+                  },
+                  child: Icon(Icons.done_rounded, size: 20),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Future<void> _handleSubmit() async {
+    final calorieProvider = Provider.of<CalorieProvider>(context, listen: false);
+
+    if (selectedActivity == null) {
+      _showDialog("Error", "Please select an activity.");
+      return;
+    }
+
+    try {
+      await calorieProvider.addCalories(selectedActivity!, selectedHour);
+      await calorieProvider.fetchCaloriesBurned(); // Ensure updated data
+
+      Navigator.of(context).pop(); // Navigate to Calories screen
+    } catch (e) {
+      _showDialog("Failed", "Failed to add calories: $e");
+    }
+  }
+
+  void _showDialog(String title, String content) {
+    showDialog(
+      context: context,
+      builder: (_) => AlertDialog(
+        title: Text(title),
+        content: Text(content),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('OK'),
+          ),
+        ],
+      ),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final textTheme = theme.textTheme;
-    final themeProvider = Provider.of<ThemeProvider>(context);
+    final calorieProvider = Provider.of<CalorieProvider>(context);
+    final activities = calorieProvider.activity;
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(
-          "Add Calorie",
-          style: textTheme.headlineLarge
-        ),
+        title: Text("Add Calorie", style: textTheme.headlineLarge),
       ),
-      body: SafeArea(
+      body: activities == null
+          ? Center(child: CircularProgressIndicator())
+          : SafeArea(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -56,243 +135,93 @@ class _AddCalorieScreenState extends State<AddCalorieScreen> {
 
             // Weight
             Center(
-              child: RichText(
-                text: TextSpan(
-                  text: 'Weight ',
-                  style: textTheme.headlineLarge,
-                  children: [
-                    TextSpan(
-                      text: '$weight',
-                      style: textTheme.headlineLarge
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  RichText(
+                    text: TextSpan(
+                      text: 'Weight ',
+                      style: textTheme.headlineLarge,
+                      children: [
+                        TextSpan(
+                          text: '$weight',
+                          style: textTheme.headlineLarge,
+                        ),
+                        TextSpan(
+                          text: ' kg',
+                          style: textTheme.bodyMedium?.copyWith(
+                            color: AppColors.myGreen,
+                          ),
+                        ),
+                      ],
                     ),
-                    TextSpan(
-                      text: ' kg',
-                      style: textTheme.bodyMedium?.copyWith(
-                        color: AppColors.myGreen,
-                      ),
-                    ),
-                  ],
-                ),
+                  ),
+                  IconButton(
+                    icon: Icon(Icons.edit, size: 18),
+                    onPressed: () => _showUpdateWeightDialog(context),
+                  ),
+                ],
               ),
             ),
             SizedBox(height: 20),
 
             // Activity label
             Center(
-              child: Text(
-                'Activity',
-                style: textTheme.headlineLarge
-              ),
+              child: Text('Activity', style: textTheme.headlineLarge),
             ),
             SizedBox(height: 10),
 
             // Activity dropdown
             Center(
-              child: Container(
-                padding: EdgeInsets.symmetric(horizontal: 16),
-                decoration: BoxDecoration(
-                  // example surface variant color for dropdown bg
-                  borderRadius: BorderRadius.circular(20),
-                ),
-                child: DropdownButton<String>(
-                  dropdownColor: themeProvider.isDarkMode ? AppColors.myGray : AppColors.myLightGray,
-                  // dropdown bg color
-                  value: selectedActivity,
-                  icon: Icon(
-                    Icons.arrow_drop_down,
-                    color: themeProvider.isDarkMode ? AppColors.myLightGray : AppColors.myGray,
-                  ),
-                  underline: SizedBox(),
-                  style: textTheme.bodyMedium?.copyWith(
-                  ),
-                  onChanged: (String? newValue) {
-                    setState(() {
-                      selectedActivity = newValue!;
-                    });
-                  },
-                  items:
-                      [
-                        'Running',
-                        'Walking',
-                        'Cycling',
-                      ].map<DropdownMenuItem<String>>((String value) {
-                        return DropdownMenuItem<String>(
-                          value: value,
-                          child: Text(value),
-                        );
-                      }).toList(),
-                ),
+              child: DropdownButton<String>(
+                value: selectedActivity,
+                hint: Text("Choose activity"),
+                items: activities
+                    .map<DropdownMenuItem<String>>((activity) {
+                  return DropdownMenuItem<String>(
+                    value: activity.activity,
+                    child: Text(activity.activity),
+                  );
+                }).toList(),
+                onChanged: (String? newValue) {
+                  setState(() {
+                    selectedActivity = newValue;
+                  });
+                },
               ),
             ),
+
             SizedBox(height: 20),
 
-            // Duration controls
+            // Duration input (Hours only)
             Center(
-              child: Column(
-                children: [
-                  Text(
-                    'Duration',
-                    style: textTheme.bodyMedium
-                  ),
-                  SizedBox(height: 10),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      // Hour controls
-                      Column(
-                        children: [
-                          Text(
-                            'Hours',
-                            style: textTheme.bodyMedium
-                          ),
-                          Row(
-                            children: [
-                              IconButton(
-                                onPressed: () {
-                                  setState(() {
-                                    if (selectedHour > 0) selectedHour--;
-                                  });
-                                },
-                                icon: Icon(
-                                  Icons.remove,
-                                  color: themeProvider.isDarkMode ? AppColors.myWhite : AppColors.myBlack,
-                                ),
-                              ),
-                              Text(
-                                '$selectedHour',
-                                style: textTheme.bodyMedium
-                              ),
-                              IconButton(
-                                onPressed: () {
-                                  setState(() {
-                                    selectedHour++;
-                                  });
-                                },
-                                icon: Icon(
-                                  Icons.add,
-                                  color: themeProvider.isDarkMode ? AppColors.myWhite : AppColors.myBlack,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
-                      SizedBox(width: 30),
-                      // Minute controls
-                      Column(
-                        children: [
-                          Text(
-                            'Minutes',
-                            style: textTheme.bodyMedium
-                          ),
-                          Row(
-                            children: [
-                              IconButton(
-                                onPressed: () {
-                                  setState(() {
-                                    if (selectedMinute > 0) selectedMinute -= 5;
-                                  });
-                                },
-                                icon: Icon(
-                                  Icons.remove,
-                                  color: themeProvider.isDarkMode ? AppColors.myWhite : AppColors.myBlack,
-                                ),
-                              ),
-                              Text(
-                                '$selectedMinute',
-                                style: textTheme.bodyMedium
-                              ),
-                              IconButton(
-                                onPressed: () {
-                                  setState(() {
-                                    selectedMinute += 5;
-                                    if (selectedMinute >= 60) {
-                                      selectedMinute = 0;
-                                      selectedHour++;
-                                    }
-                                  });
-                                },
-                                icon: Icon(
-                                  Icons.add,
-                                  color: themeProvider.isDarkMode ? AppColors.myWhite : AppColors.myBlack,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                ],
+              child: DropdownButton<int>(
+                value: selectedHour,
+                items: List.generate(10, (index) {
+                  return DropdownMenuItem(
+                    value: index,
+                    child: Text('$index h'),
+                  );
+                }),
+                onChanged: (value) {
+                  setState(() {
+                    selectedHour = value!;
+                  });
+                },
               ),
             ),
-            SizedBox(height: 30),
-
-            // Calories burned result
-            if (caloriesBurned != null)
-              Center(
-                child: Column(
-                  children: [
-                    RichText(
-                      text: TextSpan(
-                        children: [
-                          TextSpan(
-                            text: '${caloriesBurned!.toStringAsFixed(0)}',
-                            style: textTheme.headlineLarge?.copyWith(
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          TextSpan(
-                            text: ' kcal',
-                            style: textTheme.headlineLarge?.copyWith(
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    SizedBox(height: 10),
-                    Text(
-                      'Calories Burned',
-                      style: textTheme.bodyMedium?.copyWith(
-                      ),
-                    ),
-                  ],
-                ),
-              ),
 
             Spacer(),
 
-            // Calculate button
-            Padding(
-              padding: const EdgeInsets.symmetric(
-                horizontal: 20.0,
-                vertical: 20,
-              ),
-              child: SizedBox(
-                width: double.infinity,
-                child: ElevatedButton(
-                  onPressed: () {
-                    setState(() {
-                      caloriesBurned = calculateCalories(
-                        selectedActivity,
-                        weight,
-                        selectedHour,
-                        selectedMinute,
-                      );
-                    });
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder:
-                            (context) =>
-                                CaloriesScreen(calories: caloriesBurned!),
-                      ),
-                    );
-                  },
-                  child: Text('Calculate'),
-                ),
+            // Submit button
+            Center(
+              child: ElevatedButton(
+                onPressed: _handleSubmit,
+                child: Text("Submit"),
               ),
             ),
+
+            Spacer(),
           ],
         ),
       ),

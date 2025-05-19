@@ -1,3 +1,4 @@
+import 'package:fit_well/providers/water_provider.dart';
 import 'package:fit_well/screens/wera%20os/wear_water_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -20,6 +21,7 @@ class _WearHomeScreenState extends State<WearHomeScreen> {
     super.initState();
     Provider.of<WatchProvider>(context, listen: false);
     Provider.of<WatchProvider>(context, listen: false).loadUserData();
+    Provider.of<WaterProvider>(context, listen: false);
   }
 
   @override

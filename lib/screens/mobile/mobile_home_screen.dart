@@ -74,7 +74,7 @@ class HomeScreenContent extends StatelessWidget {
             onTap: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (_) => CaloriesScreen(calories: 0)),
+                MaterialPageRoute(builder: (_) => CaloriesScreen()),
               );
             },
           ),

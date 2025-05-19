@@ -3,27 +3,39 @@ import 'package:fit_well/utils/custom_themes/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../../providers/calorie_provider.dart';
 import '../../providers/theme_provider.dart';
 
-class CaloriesScreen extends StatelessWidget {
-  final double calories;
+class CaloriesScreen extends StatefulWidget {
+  const CaloriesScreen({Key? key}) : super(key: key);
 
-  const CaloriesScreen({Key? key, required this.calories}) : super(key: key);
+  @override
+  State<CaloriesScreen> createState() => _CaloriesScreenState();
+}
+
+class _CaloriesScreenState extends State<CaloriesScreen> {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      Provider.of<CalorieProvider>(context, listen: false).fetchCaloriesBurned();
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final themeProvider = Provider.of<ThemeProvider>(context);
-
+    final calorieProvider = Provider.of<CalorieProvider>(context);
+    final isLoading = calorieProvider.isLoading;
+    final totalCalories = calorieProvider.totalCalorieData?.totalCaloriesBurned ?? 0.0;
 
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
           icon: Icon(Icons.arrow_back, color: AppColors.myGreen),
           onPressed: () {
-            Navigator.pop(
-              context,
-            );
+            Navigator.pop(context);
           },
         ),
       ),
@@ -37,7 +49,9 @@ class CaloriesScreen extends StatelessWidget {
                   text: TextSpan(
                     children: [
                       TextSpan(
-                        text: calories.toStringAsFixed(0),
+                        text: isLoading
+                            ? '0'
+                            : totalCalories.toStringAsFixed(0),
                         style: theme.textTheme.headlineLarge?.copyWith(
                           fontSize: 65,
                         ),
