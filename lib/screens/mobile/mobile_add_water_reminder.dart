@@ -1,18 +1,18 @@
 import 'package:fit_well/providers/water_provider.dart';
 import 'package:fit_well/screens/mobile/mobile_water_reminder_screen.dart';
-import 'package:fit_well/utils/custom_themes/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class AddWaterReminder extends StatefulWidget {
-  const AddWaterReminder({Key? key}) : super(key: key);
+  final String userId;
+  const AddWaterReminder({Key? key, required this.userId}) : super(key: key);
 
   @override
   State<AddWaterReminder> createState() => _AddWaterReminderState();
 }
 
 class _AddWaterReminderState extends State<AddWaterReminder> {
-  double waterAmount = 500;
+  double waterAmount = 2000;
 
   @override
   Widget build(BuildContext context) {
@@ -21,13 +21,14 @@ class _AddWaterReminderState extends State<AddWaterReminder> {
     final textTheme = theme.textTheme;
 
     return Scaffold(
+      appBar: AppBar(title: const Text('Set Water Goal')),
       body: Padding(
         padding: const EdgeInsets.all(24.0),
         child: Column(
           children: [
-            const SizedBox(height: 50),
-            Text('Set Water Goal', style: textTheme.labelLarge),
             const SizedBox(height: 20),
+            Text('Set your daily water goal', style: textTheme.headlineSmall),
+            const SizedBox(height: 30),
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 20),
               decoration: BoxDecoration(
@@ -58,10 +59,10 @@ class _AddWaterReminderState extends State<AddWaterReminder> {
             Slider(
               value: waterAmount,
               min: 100,
-              max: 2000,
-              divisions: 38,
-              activeColor: AppColors.myGreen,
-              inactiveColor: AppColors.myBlack,
+              max: 4000,
+              divisions: 39,
+              activeColor: Colors.blue,
+              inactiveColor: Colors.grey,
               label: "${waterAmount.toInt()} ml",
               onChanged: (value) {
                 setState(() {
@@ -89,10 +90,15 @@ class _AddWaterReminderState extends State<AddWaterReminder> {
                     ),
                   );
 
+                  // Navigate to WaterReminderScreen
                   Navigator.pushReplacement(
                     context,
                     MaterialPageRoute(
-                      builder: (_) => WaterReminderScreen(),
+                      builder:
+                          (_) => ChangeNotifierProvider.value(
+                            value: waterProvider,
+                            child: const WaterReminderScreen(),
+                          ),
                     ),
                   );
                 } catch (e) {
@@ -104,7 +110,7 @@ class _AddWaterReminderState extends State<AddWaterReminder> {
                   );
                 }
               },
-              child: Center(child: Text('Add')),
+              child: const Center(child: Text('Set Goal')),
             ),
             const SizedBox(height: 30),
           ],

@@ -3,6 +3,7 @@ import 'package:fit_well/providers/water_provider.dart';
 import 'package:fit_well/screens/mobile/mobile_calories_screen.dart';
 import 'package:fit_well/screens/mobile/mobile_report_screen.dart';
 import 'package:fit_well/screens/mobile/mobile_set_timer_screen.dart';
+import 'package:fit_well/screens/mobile/mobile_water_reminder_screen.dart';
 import 'package:fit_well/screens/mobile/profile_screen.dart';
 import 'package:fit_well/utils/custom_themes/colors.dart';
 import 'package:flutter/material.dart';
@@ -65,7 +66,6 @@ class HomeScreenContent extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       child: ListView(
@@ -77,9 +77,7 @@ class HomeScreenContent extends StatelessWidget {
             onTap: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(
-                  builder: (_) => CaloriesScreen(calories: 0),
-                ),
+                MaterialPageRoute(builder: (_) => CaloriesScreen(calories: 0)),
               );
             },
           ),
@@ -89,17 +87,16 @@ class HomeScreenContent extends StatelessWidget {
             title: 'Water Log',
             icon: FontAwesomeIcons.droplet,
             onTap: () {
-              WidgetsBinding.instance.addPostFrameCallback((_) {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (_) => ChangeNotifierProvider(
-                      create: (_) => WaterProvider(),
-                      child: MobileAddWaterReminder()
-                    ),
-                  ),
-                );
-              });
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder:
+                      (_) => ChangeNotifierProvider(
+                        create: (_) => WaterProvider(userId: userId),
+                        child: AddWaterReminder(userId: userId),
+                      ),
+                ),
+              );
             },
           ),
           const SizedBox(height: 20),
@@ -110,9 +107,7 @@ class HomeScreenContent extends StatelessWidget {
             onTap: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(
-                  builder: (_) => SetTimerScreen(),
-                ),
+                MaterialPageRoute(builder: (_) => SetTimerScreen()),
               );
             },
           ),
@@ -122,11 +117,11 @@ class HomeScreenContent extends StatelessWidget {
   }
 
   Widget _buildCard(
-      BuildContext context, {
-        required String title,
-        required IconData icon,
-        void Function()? onTap,
-      }) {
+    BuildContext context, {
+    required String title,
+    required IconData icon,
+    void Function()? onTap,
+  }) {
     final themeProvider = Provider.of<ThemeProvider>(context);
     return Card(
       elevation: 2,
@@ -141,9 +136,15 @@ class HomeScreenContent extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              Text(title, style: Theme.of(context).textTheme.headlineLarge,
+              Text(title, style: Theme.of(context).textTheme.headlineLarge),
+              Icon(
+                icon,
+                size: 36,
+                color:
+                    themeProvider.isDarkMode
+                        ? AppColors.myWhite
+                        : AppColors.myBlack,
               ),
-              Icon(icon, size: 36, color: themeProvider.isDarkMode? AppColors.myWhite : AppColors.myBlack ),
             ],
           ),
         ),

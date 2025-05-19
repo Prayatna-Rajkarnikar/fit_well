@@ -1,46 +1,35 @@
+import 'package:fit_well/service/water_api_service.dart';
 import 'package:flutter/foundation.dart';
 
-import '../service/water_api_service.dart';
-
 class WaterProvider extends ChangeNotifier {
-  final WaterApiService _apiService = WaterApiService();
+  final String userId;
+  int waterGoal = 2000;
+  int currentIntake = 0;
+  final WaterApiService api = WaterApiService();
 
-  int _waterGoal = 0;
-  int _currentIntake = 0;
-
-  int get waterGoal => _waterGoal;
-  int get currentIntake => _currentIntake;
-
-  Future<void> setWaterGoal(int waterGoalMl) async {
-    try {
-      await _apiService.setWaterGoal(waterGoalMl);
-      _waterGoal = waterGoalMl;
-      notifyListeners();
-    } catch (e) {
-      debugPrint("Provider Error - setWaterGoal: $e");
-      rethrow;
-    }
-  }
-
- Future<void> addWaterIntake(int amountMl) async {
-    try {
-      await _apiService.addWaterIntake(amountMl);
-      await fetchDailyIntake();
-    } catch (e) {
-      debugPrint("Provider Error - addWaterIntake: $e");
-      rethrow;
-    }
-  }
+  WaterProvider({required this.userId});
 
   Future<void> fetchDailyIntake() async {
     try {
-      final data = await _apiService.getDailyIntake();
-      _currentIntake = data['totalIntake'] ?? 0;
-      _waterGoal = data['waterGoal'] ?? 0;
+      final data = await api.getDailyIntake(userId);
+      waterGoal = data['waterGoal'] ?? 2000;
+      currentIntake = data['currentIntake'] ?? 0;
       notifyListeners();
     } catch (e) {
-      debugPrint("Provider Error - fetchDailyIntake: $e");
-      rethrow;
+      // handle error or set defaults
+      debugPrint("fetchDailyIntake error: $e");
     }
+  }
+
+  Future<void> setWaterGoal(int goal) async {
+    await api.setWaterGoal(goal);
+    waterGoal = goal;
+    notifyListeners();
+  }
+
+  Future<void> addWaterIntake(int amount) async {
+    await api.addWaterIntake(amount);
+    currentIntake += amount;
+    notifyListeners();
   }
 }

@@ -41,6 +41,7 @@ void main() async {
   // Check for Wear OS
   isWear = (await IsWear().check()) ?? false;
 
+  var userId;
   runApp(
     MultiProvider(
       providers: [
@@ -48,7 +49,7 @@ void main() async {
         ChangeNotifierProvider(create: (_) => AuthProvider()),
         ChangeNotifierProvider(create: (_) => WatchProvider()),
         ChangeNotifierProvider(create: (_) => CalorieProvider()),
-        ChangeNotifierProvider(create: (_) => WaterProvider()),
+        ChangeNotifierProvider(create: (_) => WaterProvider(userId: userId)),
       ],
       child: const MyApp(),
     ),

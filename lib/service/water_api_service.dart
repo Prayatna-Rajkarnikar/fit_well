@@ -9,28 +9,21 @@ class WaterApiService {
 
   Future<void> setWaterGoal(int waterGoalMl) async {
     final url = Uri.parse("$baseUrl/water/set-goal");
-
     try {
       final prefs = await SharedPreferences.getInstance();
       String? token = prefs.getString('token');
-
-      if (token == null) {
+      if (token == null)
         throw Exception('No token found. Please log in again.');
-      }
 
       final response = await http.post(
         url,
-        headers: {
-          'Content-Type': 'application/json',
-          'Cookie': 'token=$token',
-        },
+        headers: {'Content-Type': 'application/json', 'Cookie': 'token=$token'},
         body: jsonEncode({"waterGoalMl": waterGoalMl}),
       );
 
       if (response.statusCode != 200) {
         throw Exception("Failed to set water goal: ${response.body}");
       }
-
       debugPrint("Water goal set successfully: ${response.body}");
     } catch (e) {
       throw Exception("Error setting water goal: $e");
@@ -39,51 +32,38 @@ class WaterApiService {
 
   Future<void> addWaterIntake(int amountMl) async {
     final url = Uri.parse("$baseUrl/water/add");
-
     try {
       final prefs = await SharedPreferences.getInstance();
       String? token = prefs.getString('token');
-
-      if (token == null) {
+      if (token == null)
         throw Exception('No token found. Please log in again.');
-      }
 
       final response = await http.post(
         url,
-        headers: {
-          'Content-Type': 'application/json',
-          'Cookie': 'token=$token',
-        },
+        headers: {'Content-Type': 'application/json', 'Cookie': 'token=$token'},
         body: jsonEncode({"amountMl": amountMl}),
       );
 
       if (response.statusCode != 201) {
         throw Exception("Failed to add water intake: ${response.body}");
       }
-
       debugPrint("Water intake added: ${response.body}");
     } catch (e) {
       throw Exception("Error adding water intake: $e");
     }
   }
 
-  Future<Map<String, dynamic>> getDailyIntake() async {
+  Future<Map<String, dynamic>> getDailyIntake(String userId) async {
     final url = Uri.parse("$baseUrl/water/daily");
-
     try {
       final prefs = await SharedPreferences.getInstance();
       String? token = prefs.getString('token');
-
-      if (token == null) {
+      if (token == null)
         throw Exception('No token found. Please log in again.');
-      }
 
       final response = await http.get(
         url,
-        headers: {
-          'Content-Type': 'application/json',
-          'Cookie': 'token=$token',
-        },
+        headers: {'Content-Type': 'application/json', 'Cookie': 'token=$token'},
       );
 
       if (response.statusCode != 200) {

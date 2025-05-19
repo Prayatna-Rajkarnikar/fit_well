@@ -1,8 +1,7 @@
 import 'dart:async';
+import 'package:fit_well/providers/water_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:fit_well/providers/water_provider.dart';
-import 'package:fit_well/service/notification_service.dart';
 
 class WaterReminderScreen extends StatefulWidget {
   const WaterReminderScreen({Key? key}) : super(key: key);
@@ -12,27 +11,26 @@ class WaterReminderScreen extends StatefulWidget {
 }
 
 class _WaterReminderScreenState extends State<WaterReminderScreen> {
-  final NotificationService _notificationService = NotificationService();
   Timer? notificationTimer;
-
   double selectedWaterAmount = 500;
 
   @override
   void initState() {
     super.initState();
 
-    _notificationService.init();
+    // Load water data on screen load
+    Future.microtask(() {
+      Provider.of<WaterProvider>(context, listen: false).fetchDailyIntake();
+    });
 
-    Provider.of<WaterProvider>(
-      context,
-    ).loadIntake();
-
+    // Timer to remind user (e.g., every 1 min)
     notificationTimer = Timer.periodic(const Duration(minutes: 1), (_) {
       final waterProvider = Provider.of<WaterProvider>(context, listen: false);
-      final current = waterProvider.?.totalIntakeMl ?? 0;
-      final goal = waterProvider.intakeData?.goalMl ?? 2500;
+      final current = waterProvider.currentIntake;
+      final goal = waterProvider.waterGoal;
 
-      _notificationService.showWaterGoalNotification(current, goal);
+      // TODO: Replace print with real notification
+      debugPrint("Reminder check - $current / $goal");
     });
   }
 
@@ -45,14 +43,12 @@ class _WaterReminderScreenState extends State<WaterReminderScreen> {
   @override
   Widget build(BuildContext context) {
     final waterProvider = Provider.of<WaterProvider>(context);
-    final current = waterProvider.intakeData?.totalIntakeMl ?? 0;
-    final goal = waterProvider.intakeData?.goalMl ?? 2500;
+    final current = waterProvider.currentIntake;
+    final goal = waterProvider.waterGoal;
 
     return Scaffold(
       appBar: AppBar(title: const Text('Water Tracker')),
-      body: waterProvider.loading
-          ? const Center(child: CircularProgressIndicator())
-          : Padding(
+      body: Padding(
         padding: const EdgeInsets.all(24),
         child: Column(
           children: [
@@ -63,7 +59,7 @@ class _WaterReminderScreenState extends State<WaterReminderScreen> {
             const SizedBox(height: 20),
             Text(
               'Select amount to add:',
-              style: Theme.of(context).textTheme.headline6,
+              style: Theme.of(context).textTheme.titleLarge,
             ),
             const SizedBox(height: 10),
             Text(
@@ -86,15 +82,21 @@ class _WaterReminderScreenState extends State<WaterReminderScreen> {
                   final allowedToAdd = goal - current;
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
-                      content: Text('You can only add up to $allowedToAdd ml to reach your goal.'),
+                      content: Text(
+                        'You can only add up to $allowedToAdd ml to reach your goal.',
+                      ),
                       backgroundColor: Colors.red,
                     ),
                   );
                 } else {
-                  await waterProvider.addWater(widget.userId, selectedWaterAmount.toInt());
+                  await waterProvider.addWaterIntake(
+                    selectedWaterAmount.toInt(),
+                  );
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
-                      content: Text('Added ${selectedWaterAmount.toInt()} ml of water!'),
+                      content: Text(
+                        'Added ${selectedWaterAmount.toInt()} ml of water!',
+                      ),
                       backgroundColor: Colors.green,
                     ),
                   );
