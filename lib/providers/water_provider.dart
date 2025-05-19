@@ -1,49 +1,46 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 
-class IntakeData {
-  int totalIntakeMl;
-  int goalMl;
-  IntakeData({required this.totalIntakeMl, required this.goalMl});
-}
+import '../service/water_api_service.dart';
 
-class WaterProvider with ChangeNotifier {
-  IntakeData? intakeData;
-  bool loading = false;
+class WaterProvider extends ChangeNotifier {
+  final WaterApiService _apiService = WaterApiService();
 
-  // Initialize or load intake
-  Future<void> loadIntake(String userId) async {
-    loading = true;
-    notifyListeners();
+  int _waterGoal = 0;
+  int _currentIntake = 0;
 
-    await Future.delayed(const Duration(seconds: 1));
-    // If intakeData is null, create default, else keep existing
-    intakeData ??= IntakeData(totalIntakeMl: 0, goalMl: 2500);
+  int get waterGoal => _waterGoal;
+  int get currentIntake => _currentIntake;
 
-    loading = false;
-    notifyListeners();
-  }
-
-  // Add water intake
-  Future<void> addWater(String userId, int amount) async {
-    if (intakeData != null) {
-      intakeData!.totalIntakeMl += amount;
+  Future<void> setWaterGoal(int waterGoalMl) async {
+    try {
+      await _apiService.setWaterGoal(waterGoalMl);
+      _waterGoal = waterGoalMl;
       notifyListeners();
-
-      if (intakeData!.totalIntakeMl >= intakeData!.goalMl) {
-        debugPrint(
-          '🎯 Goal met: ${intakeData!.totalIntakeMl} / ${intakeData!.goalMl}',
-        );
-      }
+    } catch (e) {
+      debugPrint("Provider Error - setWaterGoal: $e");
+      rethrow;
     }
   }
 
-  // Set or update water goal
-  void setGoal(int goalMl) {
-    if (intakeData == null) {
-      intakeData = IntakeData(totalIntakeMl: 0, goalMl: goalMl);
-    } else {
-      intakeData!.goalMl = goalMl;
+ Future<void> addWaterIntake(int amountMl) async {
+    try {
+      await _apiService.addWaterIntake(amountMl);
+      await fetchDailyIntake();
+    } catch (e) {
+      debugPrint("Provider Error - addWaterIntake: $e");
+      rethrow;
     }
-    notifyListeners();
+  }
+
+  Future<void> fetchDailyIntake() async {
+    try {
+      final data = await _apiService.getDailyIntake();
+      _currentIntake = data['totalIntake'] ?? 0;
+      _waterGoal = data['waterGoal'] ?? 0;
+      notifyListeners();
+    } catch (e) {
+      debugPrint("Provider Error - fetchDailyIntake: $e");
+      rethrow;
+    }
   }
 }

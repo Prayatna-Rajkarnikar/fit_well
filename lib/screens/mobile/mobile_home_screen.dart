@@ -3,7 +3,6 @@ import 'package:fit_well/providers/water_provider.dart';
 import 'package:fit_well/screens/mobile/mobile_calories_screen.dart';
 import 'package:fit_well/screens/mobile/mobile_report_screen.dart';
 import 'package:fit_well/screens/mobile/mobile_set_timer_screen.dart';
-import 'package:fit_well/screens/mobile/mobile_water_reminder_screen.dart';
 import 'package:fit_well/screens/mobile/profile_screen.dart';
 import 'package:fit_well/utils/custom_themes/colors.dart';
 import 'package:flutter/material.dart';
@@ -11,6 +10,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:provider/provider.dart';
 
 import 'bottom_nav_bar.dart';
+import 'mobile_add_water_reminder.dart';
 
 class HomeScreen extends StatefulWidget {
   final String userId;
@@ -95,7 +95,7 @@ class HomeScreenContent extends StatelessWidget {
                   MaterialPageRoute(
                     builder: (_) => ChangeNotifierProvider(
                       create: (_) => WaterProvider(),
-                      child: WaterReminderScreen(userId: userId),
+                      child: MobileAddWaterReminder()
                     ),
                   ),
                 );

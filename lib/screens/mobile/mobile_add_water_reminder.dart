@@ -31,8 +31,7 @@ class _AddWaterReminderState extends State<AddWaterReminder> {
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 20),
               decoration: BoxDecoration(
-                color:
-                    colorScheme.surfaceVariant, // use a themed container color
+                color: colorScheme.surfaceVariant,
                 borderRadius: BorderRadius.circular(30),
               ),
               child: Row(
@@ -61,7 +60,7 @@ class _AddWaterReminderState extends State<AddWaterReminder> {
               min: 100,
               max: 2000,
               divisions: 38,
-              activeColor: AppColors.myGreen, // primary green or custom color
+              activeColor: AppColors.myGreen,
               inactiveColor: AppColors.myBlack,
               label: "${waterAmount.toInt()} ml",
               onChanged: (value) {
@@ -71,37 +70,41 @@ class _AddWaterReminderState extends State<AddWaterReminder> {
               },
             ),
             const Spacer(),
-            GestureDetector(
-              onTap: () {
+            ElevatedButton(
+              onPressed: () async {
                 final waterProvider = Provider.of<WaterProvider>(
                   context,
                   listen: false,
                 );
-                waterProvider.setGoal(waterAmount.toInt());
 
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text(
-                      'Goal set for ${waterAmount.toInt()} ml of water!',
+                try {
+                  await waterProvider.setWaterGoal(waterAmount.toInt());
+
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text(
+                        'Goal set for ${waterAmount.toInt()} ml of water!',
+                      ),
+                      backgroundColor: colorScheme.primary,
                     ),
-                    backgroundColor: colorScheme.primary,
-                  ),
-                );
+                  );
 
-                Navigator.pushReplacement(
-                  context,
-                  MaterialPageRoute(
-                    builder:
-                        (_) => WaterReminderScreen(
-                          userId: 'user_123',
-                        ), // replace with real userId
-                  ),
-                );
+                  Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => WaterReminderScreen(),
+                    ),
+                  );
+                } catch (e) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text('Failed to set water goal: $e'),
+                      backgroundColor: Colors.red,
+                    ),
+                  );
+                }
               },
-              child: ElevatedButton(
-                onPressed: () {},
-                child: Center(child: Text('Add')),
-              ),
+              child: Center(child: Text('Add')),
             ),
             const SizedBox(height: 30),
           ],
