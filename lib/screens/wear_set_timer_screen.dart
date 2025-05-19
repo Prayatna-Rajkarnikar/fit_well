@@ -2,238 +2,53 @@ import 'package:flutter/material.dart';
 import 'dart:async';
 import 'wear_add_timer_screen.dart';
 
-class WearTimerScreen extends StatefulWidget {
-  const WearTimerScreen({super.key});
+class WearSetTimerScreen extends StatefulWidget {
+  const WearSetTimerScreen({super.key});
 
   @override
-  State<WearTimerScreen> createState() => _WearTimerScreenState();
+  State<WearSetTimerScreen> createState() => _WearSetTimerScreenState();
 }
 
-class _WearTimerScreenState extends State<WearTimerScreen> {
-  Duration duration = const Duration();
-  Timer? timer;
-  bool isRunning = false;
+class _WearSetTimerScreenState extends State<WearSetTimerScreen> {
+  int selectedMinutes = 0;
+  int selectedSeconds = 0;
 
-  // Controllers for the ListWheelScrollViews
-  late FixedExtentScrollController _minutesController;
-  late FixedExtentScrollController _secondsController;
-
-  // Lists of minutes and seconds
   final List<int> minutes = List.generate(60, (index) => index);
   final List<int> seconds = List.generate(60, (index) => index);
 
-  // Selected values
-  int selectedMinutes = 0;
-  int selectedSeconds = 0;
+  late FixedExtentScrollController _minutesController;
+  late FixedExtentScrollController _secondsController;
 
   @override
   void initState() {
     super.initState();
-    _minutesController = FixedExtentScrollController(
-      initialItem: selectedMinutes,
-    );
-    _secondsController = FixedExtentScrollController(
-      initialItem: selectedSeconds,
-    );
+    _minutesController = FixedExtentScrollController(initialItem: selectedMinutes);
+    _secondsController = FixedExtentScrollController(initialItem: selectedSeconds);
   }
 
   @override
   void dispose() {
-    timer?.cancel();
     _minutesController.dispose();
     _secondsController.dispose();
     super.dispose();
   }
 
-  void startTimer() {
-    // Set the duration based on selected values if timer is not already running
-    if (!isRunning) {
-      duration = Duration(minutes: selectedMinutes, seconds: selectedSeconds);
-    }
-
-    timer = Timer.periodic(const Duration(seconds: 1), (_) {
-      setState(() {
-        if (duration.inSeconds > 0) {
-          duration = duration - const Duration(seconds: 1);
-        } else {
-          timer?.cancel();
-          isRunning = false;
-        }
-      });
-    });
-  }
-
-  void toggleTimer() {
-    if (isRunning) {
-      timer?.cancel();
-    } else {
-      startTimer();
-    }
-    setState(() {
-      isRunning = !isRunning;
-    });
-  }
-
-  void setTimer() {
-    // Navigate to WearAddTimerScreen with selected duration
+  void _navigateToTimerScreen() {
     if (selectedMinutes > 0 || selectedSeconds > 0) {
       Navigator.push(
         context,
         MaterialPageRoute(
-          builder:
-              (context) => WearAddTimerScreen(
-                selectedDuration: Duration(
-                  minutes: selectedMinutes,
-                  seconds: selectedSeconds,
-                ),
-              ),
+          builder: (context) => WearAddTimerScreen(
+            selectedDuration: Duration(minutes: selectedMinutes, seconds: selectedSeconds),
+          ),
         ),
       );
     }
   }
 
-  void resetTimer() {
-    timer?.cancel();
-    setState(() {
-      duration = Duration(minutes: selectedMinutes, seconds: selectedSeconds);
-      isRunning = false;
-    });
-  }
-
-  String formatDuration(Duration d) {
+  String _formatTime(int min, int sec) {
     String twoDigits(int n) => n.toString().padLeft(2, '0');
-    final minutes = twoDigits(d.inMinutes.remainder(60));
-    final seconds = twoDigits(d.inSeconds.remainder(60));
-    return "$minutes:$seconds";
-  }
-
-  Widget _buildTimeWheel() {
-    if (isRunning) {
-      return Center(
-        child: Text(
-          formatDuration(duration),
-          style: const TextStyle(
-            fontSize: 40,
-            fontWeight: FontWeight.bold,
-            color: Colors.white,
-          ),
-        ),
-      );
-    }
-
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        // Minutes wheel
-        SizedBox(
-          width: 70,
-          height: 150,
-          child: ListWheelScrollView.useDelegate(
-            controller: _minutesController,
-            itemExtent: 50,
-            physics: const FixedExtentScrollPhysics(),
-            onSelectedItemChanged: (index) {
-              setState(() {
-                selectedMinutes = minutes[index];
-                duration = Duration(
-                  minutes: selectedMinutes,
-                  seconds: selectedSeconds,
-                );
-              });
-            },
-            perspective: 0.005,
-            childDelegate: ListWheelChildBuilderDelegate(
-              builder: (context, index) {
-                bool isSelected =
-                    minutes[index] == selectedMinutes && !isRunning;
-                return Center(
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 15,
-                      vertical: 8,
-                    ),
-                    decoration: BoxDecoration(
-                      color: isSelected ? Colors.grey[800] : Colors.transparent,
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    child: Text(
-                      minutes[index].toString().padLeft(2, '0'),
-                      style: TextStyle(
-                        fontSize: isSelected ? 28 : 20,
-                        fontWeight: FontWeight.bold,
-                        color: isSelected ? Colors.green : Colors.white,
-                      ),
-                    ),
-                  ),
-                );
-              },
-              childCount: minutes.length,
-            ),
-          ),
-        ),
-
-        // Colon separator
-        Container(
-          margin: const EdgeInsets.symmetric(horizontal: 8),
-          child: const Text(
-            ":",
-            style: TextStyle(
-              fontSize: 40,
-              fontWeight: FontWeight.bold,
-              color: Colors.white,
-            ),
-          ),
-        ),
-
-        // Seconds wheel
-        SizedBox(
-          width: 70,
-          height: 150,
-          child: ListWheelScrollView.useDelegate(
-            controller: _secondsController,
-            itemExtent: 50,
-            physics: const FixedExtentScrollPhysics(),
-            onSelectedItemChanged: (index) {
-              setState(() {
-                selectedSeconds = seconds[index];
-                duration = Duration(
-                  minutes: selectedMinutes,
-                  seconds: selectedSeconds,
-                );
-              });
-            },
-            perspective: 0.005,
-            childDelegate: ListWheelChildBuilderDelegate(
-              builder: (context, index) {
-                bool isSelected =
-                    seconds[index] == selectedSeconds && !isRunning;
-                return Center(
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 15,
-                      vertical: 8,
-                    ),
-                    decoration: BoxDecoration(
-                      color: isSelected ? Colors.grey[800] : Colors.transparent,
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    child: Text(
-                      seconds[index].toString().padLeft(2, '0'),
-                      style: TextStyle(
-                        fontSize: isSelected ? 28 : 20,
-                        fontWeight: FontWeight.bold,
-                        color: isSelected ? Colors.green : Colors.white,
-                      ),
-                    ),
-                  ),
-                );
-              },
-              childCount: seconds.length,
-            ),
-          ),
-        ),
-      ],
-    );
+    return "${twoDigits(min)}:${twoDigits(sec)}";
   }
 
   @override
@@ -241,74 +56,104 @@ class _WearTimerScreenState extends State<WearTimerScreen> {
     return Scaffold(
       backgroundColor: Colors.black,
       body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
+        child: Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const Spacer(),
+              const SizedBox(height: 4),
               const Text(
-                "Set Timer",
-                style: TextStyle(
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white,
+                "min",
+                style: TextStyle(fontSize: 14, color: Colors.white70),
+              ),
+
+              const SizedBox(height: 20),
+
+              // Wheel Pickers
+              SizedBox(
+                height: 50,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    _buildWheel(
+                      controller: _minutesController,
+                      valueList: minutes,
+                      onChanged: (val) => setState(() => selectedMinutes = val),
+                      selectedValue: selectedMinutes,
+                    ),
+                    const SizedBox(width: 10),
+                    _buildWheel(
+                      controller: _secondsController,
+                      valueList: seconds,
+                      onChanged: (val) => setState(() => selectedSeconds = val),
+                      selectedValue: selectedSeconds,
+                    ),
+                  ],
                 ),
               ),
-              const SizedBox(height: 40),
 
-              // Time selection wheels
-              _buildTimeWheel(),
+              const SizedBox(height: 20),
 
-              const Spacer(),
-
-              // Control buttons
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  // Reset button (only shown when timer is running or paused with time elapsed)
-                  if (isRunning ||
-                      duration.inSeconds <
-                          (selectedMinutes * 60 + selectedSeconds))
-                    ElevatedButton(
-                      onPressed: resetTimer,
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.red,
-                        shape: const CircleBorder(),
-                        padding: const EdgeInsets.all(15),
-                      ),
-                      child: const Icon(
-                        Icons.refresh,
-                        size: 25,
-                        color: Colors.white,
-                      ),
-                    ),
-
-                  const SizedBox(width: 20),
-
-                  // Set button (to confirm selection and navigate to WearAddTimerScreen)
-                  ElevatedButton(
-                    onPressed:
-                        (selectedMinutes > 0 || selectedSeconds > 0)
-                            ? setTimer
-                            : null,
+              // Set Button
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 30),
+                child: SizedBox(
+                  width: 120,
+                  height: 40,
+                  child: ElevatedButton(
+                    onPressed: (selectedMinutes > 0 || selectedSeconds > 0)
+                        ? _navigateToTimerScreen
+                        : null,
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.green,
-                      shape: const CircleBorder(),
-                      padding: const EdgeInsets.all(20),
-                      disabledBackgroundColor: Colors.grey[800],
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      padding: const EdgeInsets.symmetric(vertical: 12),
+                      disabledBackgroundColor: Colors.grey[700],
                     ),
-                    child: const Icon(
-                      Icons.check,
-                      size: 30,
-                      color: Colors.white,
+                    child: const Text(
+                      'Set',
+                      style: TextStyle(fontSize: 14, color: Colors.white),
                     ),
                   ),
-                ],
+                ),
               ),
-              const SizedBox(height: 40),
             ],
           ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildWheel({
+    required FixedExtentScrollController controller,
+    required List<int> valueList,
+    required ValueChanged<int> onChanged,
+    required int selectedValue,
+  }) {
+    return SizedBox(
+      width: 50,
+      child: ListWheelScrollView.useDelegate(
+        controller: controller,
+        itemExtent: 30,
+        perspective: 0.005,
+        physics: const FixedExtentScrollPhysics(),
+        onSelectedItemChanged: onChanged,
+        childDelegate: ListWheelChildBuilderDelegate(
+          builder: (context, index) {
+            bool isSelected = valueList[index] == selectedValue;
+            return Center(
+              child: Text(
+                valueList[index].toString().padLeft(2, '0'),
+                style: TextStyle(
+                  fontSize: isSelected ? 22 : 16,
+                  color: isSelected ? Colors.greenAccent : Colors.white70,
+                  fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                ),
+              ),
+            );
+          },
+          childCount: valueList.length,
         ),
       ),
     );

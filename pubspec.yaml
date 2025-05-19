@@ -49,8 +49,16 @@ dependencies:
   font_awesome_flutter: ^10.7.0 # <- add this line or the latest version
 
 dev_dependencies:
+  flutter_launcher_icons: ^0.13.1
   flutter_test:
     sdk: flutter
+
+
+flutter_icons:
+  android: true  # Set this to true to generate Android icons
+  ios: true      # Set this to true to generate iOS icons
+  image_path: "assets/icons/app_logo.png"
+
 
   # The "flutter_lints" package below contains a set of recommended lints to
   # encourage good coding practices. The lint set provided by the package is
@@ -69,9 +77,10 @@ flutter:
   # the material Icons class.
   uses-material-design: true
 
+
   # To add assets to your application, add an assets section, like this:
-  # assets:
-  #   - images/a_dot_burr.jpeg
+  assets:
+     - assets/images/
   #   - images/a_dot_ham.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see

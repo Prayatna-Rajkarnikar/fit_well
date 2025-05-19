@@ -1,3 +1,5 @@
+import 'package:fit_well/screens/mobile_set_timer_screen.dart';
+import 'package:fit_well/screens/wear_set_timer_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:wear_plus/wear_plus.dart';
@@ -86,6 +88,14 @@ class _WearHomeScreenState extends State<WearHomeScreen> {
                       child: ListTile(
                         title: Text('Timer', style: Theme.of(context).textTheme.headlineLarge,),
                         trailing: Icon(Icons.alarm_rounded, size: 20.0,),
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => WearSetTimerScreen(),
+                            ),
+                          );
+                        },
                       ),
                     ),
                     SizedBox(height: 28.0,)
