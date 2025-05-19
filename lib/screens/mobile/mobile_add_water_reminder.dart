@@ -1,5 +1,6 @@
 import 'package:fit_well/providers/water_provider.dart';
 import 'package:fit_well/screens/mobile/mobile_water_reminder_screen.dart';
+import 'package:fit_well/utils/custom_themes/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -15,38 +16,23 @@ class _AddWaterReminderState extends State<AddWaterReminder> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    final textTheme = theme.textTheme;
+
     return Scaffold(
-      backgroundColor: Colors.black,
-      appBar: AppBar(
-        backgroundColor: Colors.black,
-        elevation: 0,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.white),
-          onPressed: () => Navigator.pop(context),
-        ),
-        title: const Text(
-          'Add Water Reminder',
-          style: TextStyle(color: Colors.white),
-        ),
-      ),
       body: Padding(
         padding: const EdgeInsets.all(24.0),
         child: Column(
           children: [
             const SizedBox(height: 50),
-            const Text(
-              'Set Water Goal',
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 20,
-                fontWeight: FontWeight.w500,
-              ),
-            ),
+            Text('Set Water Goal', style: textTheme.labelLarge),
             const SizedBox(height: 20),
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 20),
               decoration: BoxDecoration(
-                color: Colors.grey[800],
+                color:
+                    colorScheme.surfaceVariant, // use a themed container color
                 borderRadius: BorderRadius.circular(30),
               ),
               child: Row(
@@ -54,16 +40,17 @@ class _AddWaterReminderState extends State<AddWaterReminder> {
                 children: [
                   Text(
                     waterAmount.toInt().toString(),
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 24,
+                    style: textTheme.headlineLarge?.copyWith(
+                      color: colorScheme.onSurface,
                       fontWeight: FontWeight.w500,
                     ),
                   ),
                   const SizedBox(width: 10),
-                  const Text(
+                  Text(
                     'ml',
-                    style: TextStyle(color: Colors.white70, fontSize: 18),
+                    style: textTheme.bodyMedium?.copyWith(
+                      color: colorScheme.onSurfaceVariant,
+                    ),
                   ),
                 ],
               ),
@@ -74,8 +61,8 @@ class _AddWaterReminderState extends State<AddWaterReminder> {
               min: 100,
               max: 2000,
               divisions: 38,
-              activeColor: Colors.green,
-              inactiveColor: Colors.white24,
+              activeColor: AppColors.myGreen, // primary green or custom color
+              inactiveColor: AppColors.myBlack,
               label: "${waterAmount.toInt()} ml",
               onChanged: (value) {
                 setState(() {
@@ -97,7 +84,7 @@ class _AddWaterReminderState extends State<AddWaterReminder> {
                     content: Text(
                       'Goal set for ${waterAmount.toInt()} ml of water!',
                     ),
-                    backgroundColor: Colors.green,
+                    backgroundColor: colorScheme.primary,
                   ),
                 );
 
@@ -107,23 +94,13 @@ class _AddWaterReminderState extends State<AddWaterReminder> {
                     builder:
                         (_) => WaterReminderScreen(
                           userId: 'user_123',
-                        ), // Replace with your actual userId
+                        ), // replace with real userId
                   ),
                 );
               },
-              child: Container(
-                width: double.infinity,
-                padding: const EdgeInsets.symmetric(vertical: 16),
-                decoration: BoxDecoration(
-                  color: Colors.green[600],
-                  borderRadius: BorderRadius.circular(40),
-                ),
-                child: const Center(
-                  child: Text(
-                    'Add',
-                    style: TextStyle(color: Colors.white, fontSize: 18),
-                  ),
-                ),
+              child: ElevatedButton(
+                onPressed: () {},
+                child: Center(child: Text('Add')),
               ),
             ),
             const SizedBox(height: 30),

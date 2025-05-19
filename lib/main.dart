@@ -1,7 +1,12 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:fit_well/providers/calorie_provider.dart';
 import 'package:fit_well/providers/watch_provider.dart';
+import 'package:fit_well/providers/water_provider.dart';
 import 'package:fit_well/screens/mobile/mobile_add_calories_screen.dart';
+import 'package:fit_well/screens/mobile/mobile_add_timer_screen.dart';
+import 'package:fit_well/screens/mobile/mobile_calories_screen.dart';
+import 'package:fit_well/screens/mobile/mobile_set_timer_screen.dart';
+import 'package:fit_well/screens/mobile/mobile_timer_screen.dart';
 import 'package:fit_well/screens/signin_screen.dart';
 import 'package:fit_well/screens/wera%20os/wear_home_screen.dart';
 import 'package:fit_well/screens/wera%20os/wear_signin_screen.dart';
@@ -43,6 +48,7 @@ void main() async {
         ChangeNotifierProvider(create: (_) => AuthProvider()),
         ChangeNotifierProvider(create: (_) => WatchProvider()),
         ChangeNotifierProvider(create: (_) => CalorieProvider()),
+        ChangeNotifierProvider(create: (_) => WaterProvider()),
       ],
       child: const MyApp(),
     ),
@@ -61,11 +67,11 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: "Fit Well",
       home:
-      isWear
-          ? authProvider.isLoggedIn
-          ? const WearHomeScreen()
-          : const WearSignInScreen()
-          : SignInScreen(),
+          isWear
+              ? authProvider.isLoggedIn
+                  ? const WearHomeScreen()
+                  : const WearSignInScreen()
+              : SignInScreen(),
       themeMode: themeProvider.themeMode,
       theme: MyTheme.lightTheme(isWear: isWear),
       darkTheme: MyTheme.darkTheme(isWear: isWear),

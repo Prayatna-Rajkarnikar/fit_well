@@ -1,6 +1,6 @@
 import 'package:fit_well/screens/mobile/mobile_add_calories_screen.dart';
+import 'package:fit_well/utils/custom_themes/colors.dart';
 import 'package:flutter/material.dart';
-// <-- Import your AddCalorieScreen here
 
 class CaloriesScreen extends StatelessWidget {
   final double calories;
@@ -9,29 +9,25 @@ class CaloriesScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return Scaffold(
-      backgroundColor: Colors.black,
-      bottomNavigationBar: BottomNavigationBar(
-        backgroundColor: Color(0xFF2C2C2C),
-        selectedItemColor: Colors.white,
-        unselectedItemColor: Colors.white70,
-        currentIndex: 0,
-        onTap: (index) {},
-        items: const [
-          BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
-          BottomNavigationBarItem(icon: Icon(Icons.bar_chart), label: 'Report'),
-          BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profile'),
-        ],
+      appBar: AppBar(
+        backgroundColor: Colors.transparent, // optional: transparent app bar
+        elevation: 0, // remove shadow
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back, color: AppColors.myGreen),
+          onPressed: () {
+            Navigator.pop(
+              context,
+            ); // Go back to the previous screen (usually home)
+          },
+        ),
       ),
       body: SafeArea(
         child: Column(
           children: [
-            Padding(
-              padding: const EdgeInsets.symmetric(
-                horizontal: 16.0,
-                vertical: 20.0,
-              ),
-            ),
+            SizedBox(height: 40),
             const Spacer(),
             Column(
               children: [
@@ -40,15 +36,15 @@ class CaloriesScreen extends StatelessWidget {
                     children: [
                       TextSpan(
                         text: calories.toStringAsFixed(0),
-                        style: TextStyle(
-                          fontSize: 60,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white,
+                        style: theme.textTheme.headlineLarge?.copyWith(
+                          fontSize: 65,
                         ),
                       ),
                       TextSpan(
                         text: ' kcal',
-                        style: TextStyle(fontSize: 24, color: Colors.green),
+                        style: theme.textTheme.bodyMedium?.copyWith(
+                          color: AppColors.myGreen,
+                        ),
                       ),
                     ],
                   ),
@@ -56,7 +52,9 @@ class CaloriesScreen extends StatelessWidget {
                 SizedBox(height: 10),
                 Text(
                   'Calories Burned',
-                  style: TextStyle(color: Colors.white70, fontSize: 18),
+                  style: theme.textTheme.bodyMedium?.copyWith(
+                    color: AppColors.myGray,
+                  ),
                 ),
               ],
             ),
@@ -75,16 +73,8 @@ class CaloriesScreen extends StatelessWidget {
                       ),
                     );
                   },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.green,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(30),
-                    ),
-                  ),
-                  child: const Text(
-                    'Add',
-                    style: TextStyle(fontSize: 18, color: Colors.white),
-                  ),
+                  style: ElevatedButton.styleFrom(),
+                  child: Text('Add'),
                 ),
               ),
             ),

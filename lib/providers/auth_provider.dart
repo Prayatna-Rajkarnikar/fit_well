@@ -9,12 +9,13 @@ class AuthProvider with ChangeNotifier {
   final AuthService _authService = AuthService();
   bool _isLoading = false;
   UserModel? _user;
+  String? get userId => _user?.id;
 
   bool get isLoading => _isLoading;
   UserModel? get user => _user;
   bool get isLoggedIn => _user != null;
 
-  Future<void> login(String email, String password) async {
+  Future<bool> login(String email, String password) async {
     _isLoading = true;
     notifyListeners();
 
@@ -24,12 +25,16 @@ class AuthProvider with ChangeNotifier {
 
       await _saveUserToPrefs(_user!);
       await _sendUserDataToWatch(_user!);
+
+      _isLoading = false;
+      notifyListeners();
+      return true; // Login success
     } catch (e) {
       debugPrint("Login error: $e");
+      _isLoading = false;
+      notifyListeners();
+      return false; // Login failed
     }
-
-    _isLoading = false;
-    notifyListeners();
   }
 
   Future<void> register(String name, String email, String password) async {

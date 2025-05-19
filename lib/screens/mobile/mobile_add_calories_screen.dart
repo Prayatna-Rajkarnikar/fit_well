@@ -1,5 +1,6 @@
-import 'package:fit_well/screens/mobile/mobile_calories_screen.dart';
+import 'package:fit_well/utils/custom_themes/colors.dart';
 import 'package:flutter/material.dart';
+import 'package:fit_well/screens/mobile/mobile_calories_screen.dart';
 
 class AddCalorieScreen extends StatefulWidget {
   @override
@@ -34,8 +35,12 @@ class _AddCalorieScreenState extends State<AddCalorieScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final textTheme = theme.textTheme;
+    final colorScheme = theme.colorScheme;
+
     return Scaffold(
-      backgroundColor: Colors.black,
+      appBar: AppBar(),
       body: SafeArea(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -45,11 +50,13 @@ class _AddCalorieScreenState extends State<AddCalorieScreen> {
               padding: const EdgeInsets.all(16.0),
               child: Row(
                 children: [
-                  Icon(Icons.arrow_back, color: Colors.white),
+                  Icon(Icons.arrow_back, color: colorScheme.onBackground),
                   SizedBox(width: 10),
                   Text(
                     "Add Calorie",
-                    style: TextStyle(color: Colors.white, fontSize: 20),
+                    style: textTheme.headlineLarge?.copyWith(
+                      color: colorScheme.onBackground,
+                    ),
                   ),
                 ],
               ),
@@ -61,15 +68,21 @@ class _AddCalorieScreenState extends State<AddCalorieScreen> {
               child: RichText(
                 text: TextSpan(
                   text: 'Weight ',
-                  style: TextStyle(color: Colors.white, fontSize: 24),
+                  style: textTheme.headlineLarge?.copyWith(
+                    color: colorScheme.onBackground,
+                  ),
                   children: [
                     TextSpan(
                       text: '$weight',
-                      style: TextStyle(color: Colors.white),
+                      style: textTheme.headlineLarge?.copyWith(
+                        color: colorScheme.onBackground,
+                      ),
                     ),
                     TextSpan(
                       text: ' kg',
-                      style: TextStyle(color: Colors.green),
+                      style: textTheme.headlineLarge?.copyWith(
+                        color: AppColors.myGreen,
+                      ),
                     ),
                   ],
                 ),
@@ -81,7 +94,9 @@ class _AddCalorieScreenState extends State<AddCalorieScreen> {
             Center(
               child: Text(
                 'Activity',
-                style: TextStyle(color: Colors.white, fontSize: 24),
+                style: textTheme.headlineLarge?.copyWith(
+                  color: colorScheme.onBackground,
+                ),
               ),
             ),
             SizedBox(height: 10),
@@ -91,15 +106,22 @@ class _AddCalorieScreenState extends State<AddCalorieScreen> {
               child: Container(
                 padding: EdgeInsets.symmetric(horizontal: 16),
                 decoration: BoxDecoration(
-                  color: Colors.grey[800],
+                  color:
+                      colorScheme
+                          .surfaceVariant, // example surface variant color for dropdown bg
                   borderRadius: BorderRadius.circular(20),
                 ),
                 child: DropdownButton<String>(
-                  dropdownColor: Colors.grey[900],
+                  dropdownColor: colorScheme.surface, // dropdown bg color
                   value: selectedActivity,
-                  icon: Icon(Icons.arrow_drop_down, color: Colors.white),
+                  icon: Icon(
+                    Icons.arrow_drop_down,
+                    color: colorScheme.onSurface,
+                  ),
                   underline: SizedBox(),
-                  style: TextStyle(color: Colors.white, fontSize: 18),
+                  style: textTheme.bodyMedium?.copyWith(
+                    color: colorScheme.onSurface,
+                  ),
                   onChanged: (String? newValue) {
                     setState(() {
                       selectedActivity = newValue!;
@@ -127,7 +149,9 @@ class _AddCalorieScreenState extends State<AddCalorieScreen> {
                 children: [
                   Text(
                     'Duration',
-                    style: TextStyle(color: Colors.white, fontSize: 20),
+                    style: textTheme.bodyMedium?.copyWith(
+                      color: colorScheme.onBackground,
+                    ),
                   ),
                   SizedBox(height: 10),
                   Row(
@@ -138,7 +162,9 @@ class _AddCalorieScreenState extends State<AddCalorieScreen> {
                         children: [
                           Text(
                             'Hours',
-                            style: TextStyle(color: Colors.white70),
+                            style: textTheme.bodyMedium?.copyWith(
+                              color: colorScheme.onBackground.withOpacity(0.7),
+                            ),
                           ),
                           Row(
                             children: [
@@ -148,13 +174,15 @@ class _AddCalorieScreenState extends State<AddCalorieScreen> {
                                     if (selectedHour > 0) selectedHour--;
                                   });
                                 },
-                                icon: Icon(Icons.remove, color: Colors.white),
+                                icon: Icon(
+                                  Icons.remove,
+                                  color: colorScheme.onBackground,
+                                ),
                               ),
                               Text(
                                 '$selectedHour',
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 18,
+                                style: textTheme.bodyMedium?.copyWith(
+                                  color: colorScheme.onBackground,
                                 ),
                               ),
                               IconButton(
@@ -163,7 +191,10 @@ class _AddCalorieScreenState extends State<AddCalorieScreen> {
                                     selectedHour++;
                                   });
                                 },
-                                icon: Icon(Icons.add, color: Colors.white),
+                                icon: Icon(
+                                  Icons.add,
+                                  color: colorScheme.onBackground,
+                                ),
                               ),
                             ],
                           ),
@@ -175,7 +206,9 @@ class _AddCalorieScreenState extends State<AddCalorieScreen> {
                         children: [
                           Text(
                             'Minutes',
-                            style: TextStyle(color: Colors.white70),
+                            style: textTheme.bodyMedium?.copyWith(
+                              color: colorScheme.onBackground.withOpacity(0.7),
+                            ),
                           ),
                           Row(
                             children: [
@@ -185,13 +218,15 @@ class _AddCalorieScreenState extends State<AddCalorieScreen> {
                                     if (selectedMinute > 0) selectedMinute -= 5;
                                   });
                                 },
-                                icon: Icon(Icons.remove, color: Colors.white),
+                                icon: Icon(
+                                  Icons.remove,
+                                  color: colorScheme.onBackground,
+                                ),
                               ),
                               Text(
                                 '$selectedMinute',
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 18,
+                                style: textTheme.bodyMedium?.copyWith(
+                                  color: colorScheme.onBackground,
                                 ),
                               ),
                               IconButton(
@@ -204,7 +239,10 @@ class _AddCalorieScreenState extends State<AddCalorieScreen> {
                                     }
                                   });
                                 },
-                                icon: Icon(Icons.add, color: Colors.white),
+                                icon: Icon(
+                                  Icons.add,
+                                  color: colorScheme.onBackground,
+                                ),
                               ),
                             ],
                           ),
@@ -227,15 +265,16 @@ class _AddCalorieScreenState extends State<AddCalorieScreen> {
                         children: [
                           TextSpan(
                             text: '${caloriesBurned!.toStringAsFixed(0)}',
-                            style: TextStyle(
-                              fontSize: 60,
+                            style: textTheme.headlineLarge?.copyWith(
                               fontWeight: FontWeight.bold,
-                              color: Colors.white,
+                              color: colorScheme.onBackground,
                             ),
                           ),
                           TextSpan(
                             text: ' kcal',
-                            style: TextStyle(fontSize: 24, color: Colors.green),
+                            style: textTheme.headlineLarge?.copyWith(
+                              color: colorScheme.primary,
+                            ),
                           ),
                         ],
                       ),
@@ -243,7 +282,9 @@ class _AddCalorieScreenState extends State<AddCalorieScreen> {
                     SizedBox(height: 10),
                     Text(
                       'Calories Burned',
-                      style: TextStyle(color: Colors.white70, fontSize: 18),
+                      style: textTheme.bodyMedium?.copyWith(
+                        color: colorScheme.onBackground.withOpacity(0.7),
+                      ),
                     ),
                   ],
                 ),
@@ -260,13 +301,6 @@ class _AddCalorieScreenState extends State<AddCalorieScreen> {
               child: SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.green,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(30),
-                    ),
-                    padding: EdgeInsets.symmetric(vertical: 16),
-                  ),
                   onPressed: () {
                     setState(() {
                       caloriesBurned = calculateCalories(
@@ -285,10 +319,7 @@ class _AddCalorieScreenState extends State<AddCalorieScreen> {
                       ),
                     );
                   },
-                  child: Text(
-                    'Calculate',
-                    style: TextStyle(fontSize: 18, color: Colors.white),
-                  ),
+                  child: Text('Calculate'),
                 ),
               ),
             ),

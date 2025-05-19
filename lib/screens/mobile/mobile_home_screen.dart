@@ -1,96 +1,159 @@
+import 'package:fit_well/providers/theme_provider.dart';
+import 'package:fit_well/providers/water_provider.dart';
+import 'package:fit_well/screens/mobile/mobile_calories_screen.dart';
+import 'package:fit_well/screens/mobile/mobile_report_screen.dart';
+import 'package:fit_well/screens/mobile/mobile_set_timer_screen.dart';
+import 'package:fit_well/screens/mobile/mobile_water_reminder_screen.dart';
+import 'package:fit_well/screens/mobile/profile_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:provider/provider.dart';
 
-class HomeScreen extends StatelessWidget {
-  const HomeScreen({super.key});
+class HomeScreen extends StatefulWidget {
+  final String userId;
+  const HomeScreen({Key? key, required this.userId}) : super(key: key);
+
+  @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+  int _currentIndex = 0;
+
+  final List<Widget> _screens = [];
+
+  @override
+  void initState() {
+    super.initState();
+
+    _screens.addAll([
+      HomeScreenContent(userId: widget.userId),
+      ReportScreen(),
+      const ProfileScreen(),
+    ]);
+  }
+
+  void _onTap(int index) {
+    setState(() {
+      _currentIndex = index;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return Scaffold(
-      backgroundColor: Colors.black,
-      body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start, // Align to left
-            children: [
-              const Text(
-                'Home',
-                style: TextStyle(
-                  fontSize: 28,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white70,
-                ),
-              ),
-              const SizedBox(height: 20),
-              Expanded(
-                child: Center(
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      _buildCard('Calories', FontAwesomeIcons.bolt),
-                      const SizedBox(height: 30),
-                      _buildCard('Water', FontAwesomeIcons.droplet),
-                      const SizedBox(height: 30),
-                      _buildCard('Timer', FontAwesomeIcons.clock),
-                    ],
-                  ),
-                ),
-              ),
-            ],
-          ),
+      appBar: AppBar(
+        title: Text(
+          ['Fit well', 'Report', 'Profile'][_currentIndex],
+          style: theme.textTheme.headlineSmall,
         ),
+        elevation: 1,
       ),
+      body: _screens[_currentIndex],
       bottomNavigationBar: BottomNavigationBar(
-        backgroundColor: const Color(0xFF2B2B2B),
-        selectedItemColor: Colors.white,
-        unselectedItemColor: Colors.white60,
+        currentIndex: _currentIndex,
         showUnselectedLabels: true,
-        currentIndex: 0,
         items: const [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: 'Home',
+          BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
+          BottomNavigationBarItem(icon: Icon(Icons.bar_chart), label: 'Report'),
+          BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profile'),
+        ],
+        onTap: _onTap,
+      ),
+    );
+  }
+}
+
+class HomeScreenContent extends StatelessWidget {
+  final String userId;
+  const HomeScreenContent({Key? key, required this.userId}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final isDark = Provider.of<ThemeProvider>(context).isDarkMode;
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      child: ListView(
+        children: [
+          _buildCard(
+            context,
+            title: 'Calories Burned',
+            icon: Icons.local_fire_department_rounded,
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => CaloriesScreen(calories: 0),
+                ),
+              );
+            },
           ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.bar_chart),
-            label: 'Report',
+          const SizedBox(height: 12),
+          _buildCard(
+            context,
+            title: 'Water Log',
+            icon: FontAwesomeIcons.droplet,
+            onTap: () {
+              WidgetsBinding.instance.addPostFrameCallback((_) {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder:
+                        (_) => ChangeNotifierProvider(
+                          create: (_) => WaterProvider(),
+                          child: WaterReminderScreen(userId: userId),
+                        ),
+                  ),
+                );
+              });
+            },
           ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.person),
-            label: 'Profile',
+          const SizedBox(height: 12),
+          _buildCard(
+            context,
+            title: 'Timer',
+            icon: Icons.alarm_rounded,
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => SetTimerScreen()),
+              );
+            },
           ),
         ],
       ),
     );
   }
 
-  Widget _buildCard(String title, IconData icon) {
-    return Container(
-      height: 170,
-      width: double.infinity,
-      decoration: BoxDecoration(
-        color: const Color(0xFF4CAF50),
-        borderRadius: BorderRadius.circular(30),
-      ),
-      padding: const EdgeInsets.symmetric(horizontal: 24),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Text(
-            title,
-            style: const TextStyle(
-              fontSize: 32,
-              fontWeight: FontWeight.bold,
-              color: Colors.white,
-            ),
+  Widget _buildCard(
+    BuildContext context, {
+    required String title,
+    required IconData icon,
+    void Function()? onTap,
+  }) {
+    final theme = Theme.of(context);
+    return Card(
+      elevation: 2,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      child: InkWell(
+        borderRadius: BorderRadius.circular(12),
+        onTap: onTap,
+        child: Container(
+          height: 180,
+          padding: const EdgeInsets.symmetric(horizontal: 24),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Text(title, style: theme.textTheme.headlineSmall),
+              Icon(icon, size: 36, color: theme.colorScheme.primary),
+            ],
           ),
-          FaIcon(
-            icon,
-            color: Colors.white,
-            size: 32,
-          ),
-        ],
+        ),
       ),
     );
   }

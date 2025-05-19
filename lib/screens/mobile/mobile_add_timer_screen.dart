@@ -1,11 +1,10 @@
-import 'package:flutter/material.dart';
 import 'dart:async';
 
-class AddTimerScreen extends StatefulWidget {
-  const AddTimerScreen({Key? key}) : super(key: key);
+import 'package:flutter/material.dart';
 
+class AddTimerScreen extends StatefulWidget {
   @override
-  State<AddTimerScreen> createState() => _AddTimerScreenState();
+  _AddTimerScreenState createState() => _AddTimerScreenState();
 }
 
 class _AddTimerScreenState extends State<AddTimerScreen> {
@@ -21,7 +20,7 @@ class _AddTimerScreenState extends State<AddTimerScreen> {
   @override
   void initState() {
     super.initState();
-    // timer starts only after user hits start button now
+    // Timer starts only after user hits start button now
   }
 
   void startTimer() {
@@ -40,6 +39,9 @@ class _AddTimerScreenState extends State<AddTimerScreen> {
         _showNotification();
       }
     });
+    setState(() {
+      isRunning = true;
+    });
   }
 
   void pauseTimer() {
@@ -52,9 +54,6 @@ class _AddTimerScreenState extends State<AddTimerScreen> {
   void resumeTimer() {
     if (remaining.inSeconds == 0) return;
     startTimer();
-    setState(() {
-      isRunning = true;
-    });
   }
 
   void resetTimer() {
@@ -155,7 +154,6 @@ class _AddTimerScreenState extends State<AddTimerScreen> {
   }
 
   void _showNotification() {
-    // Simple alert dialog notification for demo
     showDialog(
       context: context,
       builder:
@@ -170,8 +168,6 @@ class _AddTimerScreenState extends State<AddTimerScreen> {
             ],
           ),
     );
-
-    // For real app use flutter_local_notifications package for system notifications
   }
 
   @override
@@ -184,95 +180,62 @@ class _AddTimerScreenState extends State<AddTimerScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    final textTheme = theme.textTheme;
+
     return Scaffold(
-      backgroundColor: Colors.black,
-      appBar: AppBar(
-        backgroundColor: Colors.black,
-        elevation: 0,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.white),
-          onPressed: () => Navigator.pop(context),
-        ),
-        title: const Text('Add Timer', style: TextStyle(color: Colors.white)),
-        actions: [
-          TextButton(
-            onPressed: _showSetTimeDialog,
-            child: const Text(
-              'Set Time',
-              style: TextStyle(color: Colors.green, fontSize: 16),
-            ),
-          ),
-        ],
-      ),
-      body: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Text(
-            formatDuration(remaining),
-            style: const TextStyle(
-              fontSize: 60,
-              fontWeight: FontWeight.bold,
-              color: Colors.white,
-            ),
-          ),
-          const SizedBox(height: 5),
-          const Text(
-            'min : sec',
-            style: TextStyle(fontSize: 16, color: Colors.grey),
-          ),
-          const SizedBox(height: 40),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      body: SafeArea(
+        child: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              IconButton(
-                iconSize: 50,
-                icon: const Icon(Icons.refresh, color: Colors.red),
-                onPressed: resetTimer,
+              Text(
+                formatDuration(remaining),
+                style: textTheme.headlineLarge?.copyWith(
+                  color: colorScheme.onBackground,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
-              ElevatedButton(
-                onPressed: () {
-                  if (isRunning) {
-                    pauseTimer();
-                  } else {
-                    if (remaining.inSeconds == 0) {
-                      setState(() {
-                        remaining = initialDuration;
-                      });
-                    }
-                    startTimer();
-                    setState(() {
-                      isRunning = true;
-                    });
-                  }
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.orange,
-                  shape: const CircleBorder(),
-                  padding: const EdgeInsets.all(20),
+              const SizedBox(height: 5),
+              Text(
+                'min : sec',
+                style: textTheme.bodyMedium?.copyWith(
+                  color: colorScheme.onBackground.withOpacity(0.7),
                 ),
-                child: Icon(
-                  isRunning ? Icons.pause : Icons.play_arrow,
-                  color: Colors.white,
-                  size: 30,
-                ),
+              ),
+              const SizedBox(height: 40),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  IconButton(
+                    iconSize: 50,
+                    icon: Icon(Icons.refresh, color: Colors.red),
+                    onPressed: resetTimer,
+                    tooltip: 'Reset',
+                  ),
+                  const SizedBox(width: 30),
+                  if (!isRunning)
+                    ElevatedButton(
+                      onPressed: startTimer,
+                      child: const Text('Start'),
+                    )
+                  else
+                    ElevatedButton(
+                      onPressed: pauseTimer,
+                      child: const Text('Pause'),
+                    ),
+                  const SizedBox(width: 10),
+                  if (!isRunning && remaining.inSeconds > 0)
+                    ElevatedButton(
+                      onPressed: resumeTimer,
+                      child: const Text('Resume'),
+                    ),
+                ],
               ),
             ],
           ),
-        ],
-      ),
-      bottomNavigationBar: BottomNavigationBar(
-        backgroundColor: Colors.grey[900],
-        selectedItemColor: Colors.green,
-        unselectedItemColor: Colors.white,
-        currentIndex: 0,
-        onTap: (index) {
-          // Navigation logic here
-        },
-        items: const [
-          BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
-          BottomNavigationBarItem(icon: Icon(Icons.bar_chart), label: 'Report'),
-          BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profile'),
-        ],
+        ),
       ),
     );
   }

@@ -1,4 +1,6 @@
+import 'package:fit_well/providers/theme_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'dart:async';
 
 class TimerScreen extends StatefulWidget {
@@ -48,17 +50,25 @@ class _TimerScreenState extends State<TimerScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.black,
       appBar: AppBar(
-        backgroundColor: Colors.black,
-        elevation: 0,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.white),
-          onPressed: () => Navigator.pop(context),
-        ),
-        title: const Text(
-          'Add Timer',
-          style: TextStyle(color: Colors.white),
+        title: Row(
+          mainAxisAlignment: MainAxisAlignment.end,
+          children: [
+            Consumer<ThemeProvider>(
+              builder: (context, themeProvider, child) {
+                final icon =
+                    themeProvider.isDarkMode
+                        ? Icons.dark_mode
+                        : Icons.light_mode;
+                return IconButton(
+                  icon: Icon(icon),
+                  onPressed: () {
+                    themeProvider.toggleTheme(!themeProvider.isDarkMode);
+                  },
+                );
+              },
+            ),
+          ],
         ),
       ),
       body: Column(
@@ -72,10 +82,7 @@ class _TimerScreenState extends State<TimerScreen> {
               color: Colors.white,
             ),
           ),
-          const Text(
-            'min',
-            style: TextStyle(fontSize: 16, color: Colors.grey),
-          ),
+          const Text('min', style: TextStyle(fontSize: 16, color: Colors.grey)),
           const SizedBox(height: 40),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 40),
@@ -93,29 +100,6 @@ class _TimerScreenState extends State<TimerScreen> {
                 style: const TextStyle(fontSize: 18, color: Colors.white),
               ),
             ),
-          ),
-        ],
-      ),
-      bottomNavigationBar: BottomNavigationBar(
-        backgroundColor: Colors.grey[900],
-        selectedItemColor: Colors.green,
-        unselectedItemColor: Colors.white,
-        currentIndex: 0,
-        onTap: (index) {
-          // Navigation logic here
-        },
-        items: const [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: 'Home',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.bar_chart),
-            label: 'Report',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.person),
-            label: 'Profile',
           ),
         ],
       ),

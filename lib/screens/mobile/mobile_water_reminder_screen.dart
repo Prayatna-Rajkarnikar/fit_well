@@ -10,7 +10,7 @@ class WaterReminderScreen extends StatefulWidget {
   const WaterReminderScreen({Key? key, required this.userId}) : super(key: key);
 
   @override
-  State<WaterReminderScreen> createState() => _WaterReminderScreenState();
+  _WaterReminderScreenState createState() => _WaterReminderScreenState();
 }
 
 class _WaterReminderScreenState extends State<WaterReminderScreen> {
@@ -25,11 +25,13 @@ class _WaterReminderScreenState extends State<WaterReminderScreen> {
 
     _notificationService.init();
 
+    // Load intake data for the given userId once widget is initialized
     Provider.of<WaterProvider>(
       context,
       listen: false,
     ).loadIntake(widget.userId);
 
+    // Set up a periodic timer to show notifications every minute
     notificationTimer = Timer.periodic(const Duration(minutes: 1), (_) {
       final waterProvider = Provider.of<WaterProvider>(context, listen: false);
       final current = waterProvider.intakeData?.totalIntakeMl ?? 0;
