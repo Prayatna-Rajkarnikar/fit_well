@@ -21,7 +21,7 @@ class _IntroScreensState extends State<MobileIntroScreens> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: Colors.black,
       body: Stack(
         children: [
           PageView(
@@ -81,7 +81,7 @@ class _IntroScreensState extends State<MobileIntroScreens> {
                 currentPage == 2 ? 'Finish' : 'Skip',
                 style: const TextStyle(
                   fontSize: 16,
-                  color: Colors.black,
+                  color: Colors.white,
                   fontWeight: FontWeight.normal,
                 ),
               ),
@@ -126,7 +126,7 @@ class _IntroScreensState extends State<MobileIntroScreens> {
           style: const TextStyle(
             fontSize: 20,
             fontWeight: FontWeight.bold,
-            color: Color.fromRGBO(18, 18, 18, 1),
+            color: Colors.white,
           ),
           textAlign: TextAlign.center,
         ),
@@ -139,7 +139,7 @@ class _IntroScreensState extends State<MobileIntroScreens> {
             style: const TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.normal,
-              color: Color.fromRGBO(18, 18, 18, 1),
+              color: Colors.white,
             ),
             textAlign: TextAlign.center,
           ),
