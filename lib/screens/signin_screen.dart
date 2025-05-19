@@ -39,7 +39,7 @@ class _SignInScreenState extends State<SignInScreen> {
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(
-          builder: (_) => HomeScreen(userId: authProvider.userId!),
+          builder: (_) => HomeScreen(),
         ),
       );
     } else {

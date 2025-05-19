@@ -1,3 +1,4 @@
+import 'package:fit_well/screens/wera%20os/wear_water_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:wear_plus/wear_plus.dart';
@@ -89,6 +90,14 @@ class _WearHomeScreenState extends State<WearHomeScreen> {
                           style: Theme.of(context).textTheme.headlineLarge,
                         ),
                         trailing: Icon(Icons.water_drop_rounded, size: 20.0),
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => const WearWaterScreen(),
+                            ),
+                          );
+                        },
                       ),
                     ),
                     Card(

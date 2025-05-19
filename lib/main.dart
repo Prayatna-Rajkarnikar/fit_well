@@ -49,7 +49,7 @@ void main() async {
         ChangeNotifierProvider(create: (_) => AuthProvider()),
         ChangeNotifierProvider(create: (_) => WatchProvider()),
         ChangeNotifierProvider(create: (_) => CalorieProvider()),
-        ChangeNotifierProvider(create: (_) => WaterProvider(userId: userId)),
+        ChangeNotifierProvider(create: (_) => WaterProvider()),
       ],
       child: const MyApp(),
     ),

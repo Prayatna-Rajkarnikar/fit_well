@@ -3,19 +3,17 @@ import 'package:fit_well/providers/water_provider.dart';
 import 'package:fit_well/screens/mobile/mobile_calories_screen.dart';
 import 'package:fit_well/screens/mobile/mobile_report_screen.dart';
 import 'package:fit_well/screens/mobile/mobile_set_timer_screen.dart';
-import 'package:fit_well/screens/mobile/mobile_water_reminder_screen.dart';
 import 'package:fit_well/screens/mobile/profile_screen.dart';
+import 'package:fit_well/screens/mobile/water_home_screen.dart';
 import 'package:fit_well/utils/custom_themes/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:provider/provider.dart';
 
 import 'bottom_nav_bar.dart';
-import 'mobile_add_water_reminder.dart';
 
 class HomeScreen extends StatefulWidget {
-  final String userId;
-  const HomeScreen({Key? key, required this.userId}) : super(key: key);
+  const HomeScreen({Key? key}) : super(key: key);
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
@@ -30,7 +28,7 @@ class _HomeScreenState extends State<HomeScreen> {
   void initState() {
     super.initState();
     _screens = [
-      HomeScreenContent(userId: widget.userId),
+      HomeScreenContent(),
       ReportScreen(),
       const ProfileScreen(),
     ];
@@ -61,8 +59,7 @@ class _HomeScreenState extends State<HomeScreen> {
 }
 
 class HomeScreenContent extends StatelessWidget {
-  final String userId;
-  const HomeScreenContent({Key? key, required this.userId}) : super(key: key);
+  const HomeScreenContent({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -92,8 +89,8 @@ class HomeScreenContent extends StatelessWidget {
                 MaterialPageRoute(
                   builder:
                       (_) => ChangeNotifierProvider(
-                        create: (_) => WaterProvider(userId: userId),
-                        child: AddWaterReminder(userId: userId),
+                        create: (_) => WaterProvider(),
+                        child: WaterHomeScreen(),
                       ),
                 ),
               );
