@@ -1,4 +1,5 @@
 import 'package:fit_well/providers/water_provider.dart';
+import 'package:fit_well/screens/wera%20os/wear_set_timer.dart';
 import 'package:fit_well/screens/wera%20os/wear_water_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -109,6 +110,14 @@ class _WearHomeScreenState extends State<WearHomeScreen> {
                           style: Theme.of(context).textTheme.headlineLarge,
                         ),
                         trailing: Icon(Icons.alarm_rounded, size: 20.0),
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => const WearSetTimerScreen(),
+                            ),
+                          );
+                        },
                       ),
                     ),
                     SizedBox(height: 28.0),

@@ -7,7 +7,7 @@ class WaterProvider extends ChangeNotifier {
   final WaterApiService _apiService = WaterApiService();
   final NotificationService _notificationService = NotificationService();
 
-  int _waterGoal = 2000; // Default value
+  int _waterGoal = 2000;
   int _currentIntake = 0;
 
   Timer? _reminderTimer;
@@ -21,7 +21,6 @@ class WaterProvider extends ChangeNotifier {
   }
 
   void _startReminderTimer() {
-    // Cancel any existing timer
     _reminderTimer?.cancel();
 
     // Start a new timer for 1 minute
