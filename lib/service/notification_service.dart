@@ -27,11 +27,11 @@ class NotificationService {
 
     if (current >= goal) {
       notificationBody =
-          "🎉 Congratulations! You've reached your water goal of $goal ml.";
+      "🎉 Congratulations! You've reached your water goal of $goal ml.";
     } else {
       final remaining = goal - current;
       notificationBody =
-          "💧 Keep going! Only $remaining ml left to reach your goal.";
+      "💧 Keep going! Only $remaining ml left to reach your goal.";
     }
 
     const androidPlatformChannelSpecifics = AndroidNotificationDetails(
@@ -51,6 +51,29 @@ class NotificationService {
       0,
       'Water Intake Reminder',
       notificationBody,
+      platformChannelSpecifics,
+    );
+  }
+
+  // New method for hydration reminder notification
+  Future<void> showHydrationReminder() async {
+    const androidPlatformChannelSpecifics = AndroidNotificationDetails(
+      'hydration_reminder_channel',
+      'Hydration Reminder Notifications',
+      channelDescription: 'Reminders to drink water if inactive',
+      importance: Importance.max,
+      priority: Priority.high,
+      showWhen: false,
+    );
+
+    const platformChannelSpecifics = NotificationDetails(
+      android: androidPlatformChannelSpecifics,
+    );
+
+    await flutterLocalNotificationsPlugin.show(
+      1,
+      'Hydration Reminder',
+      "🚰 Hey! Don't forget to drink some water now!",
       platformChannelSpecifics,
     );
   }
