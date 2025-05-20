@@ -9,13 +9,16 @@ class AuthProvider with ChangeNotifier {
   final AuthService _authService = AuthService();
   bool _isLoading = false;
   UserModel? _user;
+
   String? get userId => _user?.id;
 
   bool get isLoading => _isLoading;
+
   UserModel? get user => _user;
+
   bool get isLoggedIn => _user != null;
 
-  Future<bool> login(String email, String password) async {
+  Future<Map<String, dynamic>> login(String email, String password) async {
     _isLoading = true;
     notifyListeners();
 
@@ -28,27 +31,44 @@ class AuthProvider with ChangeNotifier {
 
       _isLoading = false;
       notifyListeners();
-      return true; // Login success
+
+      return {'success': true, 'message': 'Login successful!'};
     } catch (e) {
       debugPrint("Login error: $e");
       _isLoading = false;
       notifyListeners();
-      return false; // Login failed
+
+      return {
+        'success': false,
+        'message': 'Login failed. Invalid Credentials.',
+      };
     }
   }
 
-  Future<void> register(String name, String email, String password) async {
+  Future<Map<String, dynamic>> register(
+    String name,
+    String email,
+    String password,
+  ) async {
     _isLoading = true;
     notifyListeners();
 
+    Map<String, dynamic> result = {
+      'success': false,
+      'message': 'Unknown error',
+    };
+
     try {
-      await _authService.registerUser(name, email, password);
+      result = await _authService.registerUser(name, email, password);
     } catch (e) {
       debugPrint("Register error: $e");
+      result = {'success': false, 'message': 'An error occurred'};
     }
 
     _isLoading = false;
     notifyListeners();
+
+    return result;
   }
 
   Future<void> _sendUserDataToWatch(UserModel user) async {

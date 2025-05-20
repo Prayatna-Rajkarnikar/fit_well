@@ -8,8 +8,8 @@ class AddTimerScreen extends StatefulWidget {
 }
 
 class _AddTimerScreenState extends State<AddTimerScreen> {
-  Duration initialDuration = const Duration(minutes: 3, seconds: 15);
-  Duration remaining = const Duration(minutes: 3, seconds: 15);
+  Duration initialDuration = const Duration(minutes: 0, seconds: 0);
+  Duration remaining = const Duration(minutes: 0, seconds: 0);
   Timer? timer;
   bool isRunning = false;
 

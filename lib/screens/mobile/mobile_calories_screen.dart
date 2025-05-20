@@ -37,6 +37,7 @@ class _CaloriesScreenState extends State<CaloriesScreen> {
             Navigator.pop(context);
           },
         ),
+        title: Text('Calorie',style: Theme.of(context).textTheme.headlineLarge,),
       ),
       body: SafeArea(
         child: Column(

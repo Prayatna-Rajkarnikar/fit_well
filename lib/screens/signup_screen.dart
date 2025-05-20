@@ -37,7 +37,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
   Widget build(BuildContext context) {
     final authProvider = Provider.of<AuthProvider>(context);
 
-
     return Scaffold(
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 24.0),
@@ -46,13 +45,12 @@ class _SignUpScreenState extends State<SignUpScreen> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                 Text(
+                Text(
                   'Register',
-                    style: Theme.of(context).textTheme.headlineLarge
-
+                  style: Theme.of(context).textTheme.headlineLarge,
                 ),
                 const SizedBox(height: 32),
-                _buildLabel("Username"),
+                _buildLabel("Name"),
                 _buildInputField(controller: _nameController),
                 const SizedBox(height: 16),
                 _buildLabel("Email"),
@@ -67,23 +65,63 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 SizedBox(
                   width: double.infinity,
                   child: ElevatedButton(
-                    onPressed: () {
-                      authProvider.register(
+                    onPressed: () async{
+                      final result = await authProvider.register(
                         _nameController.text.trim(),
                         _emailController.text.trim(),
-                         _passwordController.text,
+                        _passwordController.text,
                       );
+
+                      final snackBar = SnackBar(
+                        content: Row(
+                          children: [
+                            Icon(
+                              result['success'] ? Icons.check_circle : Icons.error,
+                              color: Colors.white,
+                            ),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: Text(
+                                result['message'],
+                                style:  TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w500,
+                                  color: result['success'] ? AppColors.myBlack : AppColors.myWhite
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                        backgroundColor: result['success'] ? Colors.green.shade700 : Colors.red.shade700,
+                        duration: const Duration(seconds: 5),
+                        behavior: SnackBarBehavior.floating,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        margin: const EdgeInsets.all(16),
+                        elevation: 6,
+                        action: SnackBarAction(
+                          label: 'DISMISS',
+                          textColor: Colors.white,
+                          onPressed: () {
+                            ScaffoldMessenger.of(context).hideCurrentSnackBar();
+                          },
+                        ),
+                      );
+
+                      ScaffoldMessenger.of(context).showSnackBar(snackBar);
+
+                      if (result['success']) {
+                        Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => const SignInScreen()));
+                      }
                     },
 
                     child:
                         authProvider.isLoading
-                            ?  CircularProgressIndicator(
+                            ? CircularProgressIndicator(
                               color: AppColors.myWhite,
                             )
-                            : const Text(
-                              'Submit',
-
-                            ),
+                            : const Text('Submit'),
                   ),
                 ),
                 const SizedBox(height: 16),
@@ -95,10 +133,11 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     );
                   },
                   child: Text(
-                    "Already have an account?",
-                                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: AppColors.myGreen)
-
-                ),
+                    "Already have an account? Login",
+                    style: Theme.of(
+                      context,
+                    ).textTheme.bodyMedium?.copyWith(color: AppColors.myGreen),
+                  ),
                 ),
               ],
             ),
@@ -111,8 +150,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
   Widget _buildLabel(String text) {
     return Align(
       alignment: Alignment.centerLeft,
-      child: Text(text,                   style: Theme.of(context).textTheme.bodyMedium
-      ),
+      child: Text(text, style: Theme.of(context).textTheme.bodyMedium),
     );
   }
 
@@ -123,12 +161,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
     return TextField(
       controller: controller,
       obscureText: obscure,
-      decoration: InputDecoration(
-        filled: true,
-
-      ),
-      style: Theme.of(context).textTheme.bodyMedium
-    ,
+      decoration: InputDecoration(filled: true),
+      style: Theme.of(context).textTheme.bodyMedium,
     );
   }
 }

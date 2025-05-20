@@ -1,6 +1,4 @@
-import 'package:fit_well/providers/theme_provider.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import 'dart:async';
 
 class TimerScreen extends StatefulWidget {
@@ -51,57 +49,40 @@ class _TimerScreenState extends State<TimerScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Row(
-          mainAxisAlignment: MainAxisAlignment.end,
-          children: [
-            Consumer<ThemeProvider>(
-              builder: (context, themeProvider, child) {
-                final icon =
-                    themeProvider.isDarkMode
-                        ? Icons.dark_mode
-                        : Icons.light_mode;
-                return IconButton(
-                  icon: Icon(icon),
-                  onPressed: () {
-                    themeProvider.toggleTheme(!themeProvider.isDarkMode);
-                  },
-                );
-              },
-            ),
-          ],
-        ),
+        title: Text("Timer", style: Theme.of(context).textTheme.headlineLarge,),
       ),
-      body: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Text(
-            formatDuration(duration),
-            style: const TextStyle(
-              fontSize: 48,
-              fontWeight: FontWeight.bold,
-              color: Colors.white,
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Text(
+              formatDuration(duration),
+              textAlign: TextAlign.center,
+              style: Theme.of(context)
+                  .textTheme
+                  .headlineLarge
+                  ?.copyWith(fontSize: 65),
             ),
-          ),
-          const Text('min', style: TextStyle(fontSize: 16, color: Colors.grey)),
-          const SizedBox(height: 40),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 40),
-            child: ElevatedButton(
+            const Text(
+              'min',
+              style: TextStyle(color: Colors.grey),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 40),
+            ElevatedButton(
               onPressed: toggleTimer,
               style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.green,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(50),
-                ),
-                minimumSize: const Size(double.infinity, 60),
+                padding:
+                const EdgeInsets.symmetric(horizontal: 50, vertical: 15),
               ),
               child: Text(
                 isRunning ? 'Pause' : 'Start',
                 style: const TextStyle(fontSize: 18, color: Colors.white),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

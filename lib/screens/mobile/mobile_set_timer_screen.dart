@@ -1,7 +1,10 @@
 import 'dart:async';
 import 'package:fit_well/screens/mobile/mobile_timer_screen.dart';
+import 'package:fit_well/utils/custom_themes/colors.dart';
 import 'package:flutter/material.dart';
-// <-- Replace this with your actual import path
+import 'package:provider/provider.dart';
+
+import '../../providers/theme_provider.dart';
 
 class SetTimerScreen extends StatefulWidget {
   const SetTimerScreen({super.key});
@@ -11,8 +14,8 @@ class SetTimerScreen extends StatefulWidget {
 }
 
 class _SetTimerScreenState extends State<SetTimerScreen> {
-  int selectedMinutes = 3;
-  int selectedSeconds = 15;
+  int selectedMinutes = 0;
+  int selectedSeconds = 0;
   late Duration remaining;
   Timer? timer;
   bool isRunning = false;
@@ -72,15 +75,43 @@ class _SetTimerScreenState extends State<SetTimerScreen> {
       context: context,
       builder:
           (_) => AlertDialog(
-            title: const Text('Timer Finished'),
-            content: const Text('Your timer has ended!'),
+            title: Text(
+              'Time’s up!',
+              style: Theme.of(context).textTheme.headlineLarge,
+            ),
+            content: Text(
+              'The timer has finished.',
+              style: Theme.of(context).textTheme.bodyMedium,
+            ),
             actions: [
               TextButton(
-                onPressed: () => Navigator.pop(context),
-                child: const Text('OK'),
+                onPressed: () {
+                  Navigator.pop(context);
+                  resetTimer();
+                },
+                child: Text(
+                  'OK',
+                  style: Theme.of(context).textTheme.bodyMedium,
+                ),
               ),
             ],
           ),
+    );
+  }
+
+  void _showCustomSnackBar(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+          message,
+          style: TextStyle(color: AppColors.myWhite, fontSize: 16),
+        ),
+        backgroundColor: Colors.redAccent,
+        behavior: SnackBarBehavior.floating,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+        margin: const EdgeInsets.all(16),
+        duration: const Duration(seconds: 2),
+      ),
     );
   }
 
@@ -91,20 +122,24 @@ class _SetTimerScreenState extends State<SetTimerScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final themeProvider = Provider.of<ThemeProvider>(context);
+
     return Scaffold(
-      backgroundColor: Colors.black,
       appBar: AppBar(
-        backgroundColor: Colors.black,
         elevation: 0,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
-          onPressed: () {
-            Navigator.pop(context);
-          },
+          onPressed: () => Navigator.pop(context),
         ),
         actions: [
           IconButton(
-            icon: const Icon(Icons.timer, color: Colors.white),
+            icon: Icon(
+              Icons.timer,
+              color:
+                  themeProvider.isDarkMode
+                      ? AppColors.myWhite
+                      : AppColors.myBlack,
+            ),
             onPressed: () {
               Navigator.push(
                 context,
@@ -120,15 +155,15 @@ class _SetTimerScreenState extends State<SetTimerScreen> {
             const Spacer(),
             Text(
               formatDuration(remaining),
-              style: const TextStyle(
-                color: Colors.white,
-                fontSize: 64,
-                fontWeight: FontWeight.bold,
-              ),
+              style: Theme.of(
+                context,
+              ).textTheme.headlineLarge?.copyWith(fontSize: 65),
             ),
-            const Text(
+            Text(
               'min : sec',
-              style: TextStyle(color: Colors.grey, fontSize: 18),
+              style: Theme.of(
+                context,
+              ).textTheme.bodyMedium?.copyWith(color: AppColors.myGray),
             ),
             const SizedBox(height: 30),
             Row(
@@ -145,12 +180,12 @@ class _SetTimerScreenState extends State<SetTimerScreen> {
                     style: ElevatedButton.styleFrom(
                       shape: const CircleBorder(),
                       padding: const EdgeInsets.all(16),
-                      backgroundColor: Colors.orange,
+                      backgroundColor: AppColors.myGreen,
                     ),
                     child: const Icon(
                       Icons.play_arrow,
                       size: 36,
-                      color: Colors.white,
+                      color: AppColors.myBlack,
                     ),
                   ),
                 if (isRunning)
@@ -164,7 +199,7 @@ class _SetTimerScreenState extends State<SetTimerScreen> {
                     child: const Icon(
                       Icons.pause,
                       size: 36,
-                      color: Colors.black,
+                      color: AppColors.myBlack,
                     ),
                   ),
                 if (isPaused)
@@ -173,32 +208,21 @@ class _SetTimerScreenState extends State<SetTimerScreen> {
                     style: ElevatedButton.styleFrom(
                       shape: const CircleBorder(),
                       padding: const EdgeInsets.all(16),
-                      backgroundColor: Colors.green,
+                      backgroundColor: AppColors.myGreen,
                     ),
                     child: const Icon(
                       Icons.play_arrow,
                       size: 36,
-                      color: Colors.white,
+                      color: AppColors.myWhite,
                     ),
                   ),
               ],
             ),
             const SizedBox(height: 40),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 40.0),
-              child: ElevatedButton(
-                onPressed: () {
-                  _showTimePickerDialog();
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.green,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(30),
-                  ),
-                  minimumSize: const Size.fromHeight(60),
-                ),
-                child: const Text('Set', style: TextStyle(fontSize: 20)),
-              ),
+            ElevatedButton(
+              onPressed: _showTimePickerDialog,
+
+              child: const Text('Set Time'),
             ),
             const Spacer(),
           ],
@@ -208,12 +232,12 @@ class _SetTimerScreenState extends State<SetTimerScreen> {
   }
 
   void _showTimePickerDialog() {
+    int tempMinutes = selectedMinutes;
+    int tempSeconds = selectedSeconds;
+
     showDialog(
       context: context,
       builder: (context) {
-        int tempMinutes = selectedMinutes;
-        int tempSeconds = selectedSeconds;
-
         return AlertDialog(
           title: const Text('Set Timer'),
           content: Row(
@@ -243,10 +267,25 @@ class _SetTimerScreenState extends State<SetTimerScreen> {
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context),
-              child: const Text('Cancel'),
+              child: Text(
+                'Cancel',
+                style: Theme.of(context).textTheme.bodyMedium,
+              ),
             ),
             ElevatedButton(
               onPressed: () {
+                if (tempMinutes < 0 || tempSeconds < 0) {
+                  Navigator.pop(context);
+                  _showCustomSnackBar('Time cannot be negative!');
+                  return;
+                }
+
+                if (tempMinutes == 0 && tempSeconds == 0) {
+                  Navigator.pop(context);
+                  _showCustomSnackBar('Timer duration must be greater than 0');
+                  return;
+                }
+
                 setState(() {
                   selectedMinutes = tempMinutes;
                   selectedSeconds = tempSeconds;
@@ -258,6 +297,7 @@ class _SetTimerScreenState extends State<SetTimerScreen> {
                   isPaused = false;
                   timer?.cancel();
                 });
+
                 Navigator.pop(context);
               },
               child: const Text('Set'),

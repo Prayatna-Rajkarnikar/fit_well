@@ -18,9 +18,7 @@ class BottomNavBar extends StatefulWidget {
   State<BottomNavBar> createState() => _BottomNavBarState();
 }
 
-void initState() {
-
-}
+void initState() {}
 
 class _BottomNavBarState extends State<BottomNavBar> {
   @override
@@ -29,23 +27,16 @@ class _BottomNavBarState extends State<BottomNavBar> {
 
     return BottomNavigationBar(
       currentIndex: widget.currentIndex,
-      backgroundColor: themeProvider.isDarkMode? AppColors.myGray : AppColors.myBlack,
+      backgroundColor:
+          themeProvider.isDarkMode ? AppColors.myLightGray : AppColors.myBlack,
       selectedItemColor: AppColors.myGreen,
-      unselectedItemColor: themeProvider.isDarkMode? AppColors.myLightGray : AppColors.myGray,
+      unselectedItemColor:
+          themeProvider.isDarkMode ? AppColors.myGray : AppColors.myGray,
       showUnselectedLabels: true,
       items: const [
-        BottomNavigationBarItem(
-          icon: Icon(Icons.home),
-          label: 'Home',
-        ),
-        BottomNavigationBarItem(
-          icon: Icon(Icons.bar_chart),
-          label: 'Report',
-        ),
-        BottomNavigationBarItem(
-          icon: Icon(Icons.person),
-          label: 'Profile',
-        ),
+        BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
+        BottomNavigationBarItem(icon: Icon(Icons.bar_chart), label: 'Report'),
+        BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profile'),
       ],
       onTap: widget.onTap,
     );
