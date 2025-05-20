@@ -10,10 +10,15 @@ class WaterProvider extends ChangeNotifier {
   int get waterGoal => _waterGoal;
   int get currentIntake => _currentIntake;
 
+
   Future<void> setWaterGoal(int waterGoalMl) async {
     try {
       await _apiService.setWaterGoal(waterGoalMl);
       _waterGoal = waterGoalMl;
+
+      // Reset intake when new goal is set
+      _currentIntake = 0;
+
       notifyListeners();
     } catch (e) {
       debugPrint("Provider Error - setWaterGoal: $e");
@@ -23,17 +28,12 @@ class WaterProvider extends ChangeNotifier {
 
   Future<void> addWaterIntake(int amountMl) async {
     try {
-      // Update local state immediately for better UX
       _currentIntake += amountMl;
       notifyListeners();
 
-      // Then sync with server
       await _apiService.addWaterIntake(amountMl);
-
-      // Finally, get the latest state from server
       await fetchDailyIntake();
     } catch (e) {
-      // Rollback if error occurs
       _currentIntake -= amountMl;
       notifyListeners();
       debugPrint("Provider Error - addWaterIntake: $e");
@@ -44,7 +44,7 @@ class WaterProvider extends ChangeNotifier {
   Future<void> fetchDailyIntake() async {
     try {
       final data = await _apiService.getDailyIntake();
-      _currentIntake = data['totalIntakeMl'] ?? 0; // Match your API response keys
+      _currentIntake = data['totalIntakeMl'] ?? 0;
       _waterGoal = data['goalMl'] ?? 2000;
       notifyListeners();
     } catch (e) {
@@ -52,4 +52,15 @@ class WaterProvider extends ChangeNotifier {
       rethrow;
     }
   }
+  Future<void> resetWaterIntake() async {
+    try {
+      await _apiService.resetWaterIntake();
+      _currentIntake = 0;
+      notifyListeners();
+    } catch (e) {
+      debugPrint("Provider Error - resetWaterIntake: $e");
+      rethrow;
+    }
+  }
+
 }

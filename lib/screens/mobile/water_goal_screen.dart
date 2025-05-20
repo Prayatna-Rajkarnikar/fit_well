@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-
 import '../../providers/water_provider.dart';
 
 class WaterGoalScreen extends StatefulWidget {
@@ -29,8 +28,7 @@ class _WaterGoalScreenState extends State<WaterGoalScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title:  Text('Set Water Goal',                   style: Theme.of(context).textTheme.headlineLarge
-        ),
+        title: Text('Set Water Goal', style: Theme.of(context).textTheme.headlineLarge),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -39,9 +37,7 @@ class _WaterGoalScreenState extends State<WaterGoalScreen> {
             TextField(
               controller: _goalController,
               keyboardType: TextInputType.number,
-              decoration: const InputDecoration(
-                labelText: 'Daily Water Goal (ml)',
-              ),
+              decoration: const InputDecoration(labelText: 'Daily Water Goal (ml)'),
             ),
             const SizedBox(height: 20),
             _isSaving

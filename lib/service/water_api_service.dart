@@ -100,4 +100,34 @@ class WaterApiService {
       throw Exception("Error fetching daily intake: $e");
     }
   }
+
+  Future<void> resetWaterIntake() async {
+    final url = Uri.parse("$baseUrl/water/reset");
+
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      String? token = prefs.getString('token');
+
+      if (token == null) {
+        throw Exception('No token found. Please log in again.');
+      }
+
+      final response = await http.post(
+        url,
+        headers: {
+          'Content-Type': 'application/json',
+          'Cookie': 'token=$token',
+        },
+      );
+
+      if (response.statusCode != 200) {
+        throw Exception("Failed to reset water intake: ${response.body}");
+      }
+
+      debugPrint("Water intake reset successfully: ${response.body}");
+    } catch (e) {
+      throw Exception("Error resetting water intake: $e");
+    }
+  }
+
 }
