@@ -1,5 +1,6 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:fit_well/providers/calorie_provider.dart';
+import 'package:fit_well/providers/report_provider.dart';
 import 'package:fit_well/providers/watch_provider.dart';
 import 'package:fit_well/providers/water_provider.dart';
 import 'package:fit_well/screens/mobile/mobile_add_calories_screen.dart';
@@ -45,8 +46,9 @@ void main() async {
   runApp(
     MultiProvider(
       providers: [
-        ChangeNotifierProvider(create: (_) => ThemeProvider()),
         ChangeNotifierProvider(create: (_) => AuthProvider()),
+        ChangeNotifierProvider(create: (_) => ReportProvider()),
+        ChangeNotifierProvider(create: (_) => ThemeProvider()),
         ChangeNotifierProvider(create: (_) => WatchProvider()),
         ChangeNotifierProvider(create: (_) => CalorieProvider()),
         ChangeNotifierProvider(create: (_) => WaterProvider()),

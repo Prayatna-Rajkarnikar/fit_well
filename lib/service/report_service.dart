@@ -1,31 +1,45 @@
 import 'dart:convert';
-import 'package:fit_well/config/app_config.dart';
+
+import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
+
+import '../config/app_config.dart';
 import '../models/report_model.dart';
 
 class ReportService {
-  String baseUrl = AppConfig.baseUrl; // Replace with your actual backend URL
+  String baseUrl = AppConfig.baseUrl;
 
-  Future<DailyReport> fetchDailyReport(String userId, String date) async {
-    final prefs = await SharedPreferences.getInstance();
-    final token = prefs.getString('token');
+  Future<ReportModel> getAllLogs() async {
+    final url = Uri.parse("$baseUrl/auth/report");
 
-    final url = Uri.parse('$baseUrl/auth/report/$userId?date=$date');
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      String? token = prefs.getString('token');
 
-    final response = await http.get(
-      url,
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer $token',
-      },
-    );
+      if (token == null) {
+        throw Exception('No token found. Please log in again.');
+      }
 
-    if (response.statusCode == 200) {
-      final data = json.decode(response.body);
-      return DailyReport.fromJson(data);
-    } else {
-      throw Exception('Failed to load daily report: ${response.body}');
+      final response = await http.get(
+        url,
+        headers: {
+          'Content-Type': 'application/json',
+          'Cookie': 'token=$token'        },
+      );
+
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        debugPrint("Report data: ${response.body}");
+        return ReportModel.fromJson(data);
+      } else {
+        debugPrint("Report data: ${response.body}");
+
+        throw Exception('Failed to fetch logs');
+      }
+    } catch (e) {
+
+      throw Exception('Error fetching logs: $e');
     }
   }
 }

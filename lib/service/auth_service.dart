@@ -43,4 +43,5 @@ class AuthService {
       throw Exception('Register failed: ${response.body}');
     }
   }
+
 }

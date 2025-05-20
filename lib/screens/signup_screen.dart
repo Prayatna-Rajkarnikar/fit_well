@@ -1,6 +1,8 @@
+import 'package:fit_well/utils/custom_themes/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:fit_well/providers/auth_provider.dart';
+import '../providers/theme_provider.dart';
 import 'signin_screen.dart';
 
 class SignUpScreen extends StatefulWidget {
@@ -37,7 +39,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
 
     return Scaffold(
-      backgroundColor: Colors.black,
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 24.0),
         child: Center(
@@ -45,13 +46,10 @@ class _SignUpScreenState extends State<SignUpScreen> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const Text(
+                 Text(
                   'Register',
-                  style: TextStyle(
-                    fontSize: 24,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
-                  ),
+                    style: Theme.of(context).textTheme.headlineLarge
+
                 ),
                 const SizedBox(height: 32),
                 _buildLabel("Username"),
@@ -76,24 +74,15 @@ class _SignUpScreenState extends State<SignUpScreen> {
                          _passwordController.text,
                       );
                     },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.green[600],
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      padding: const EdgeInsets.symmetric(vertical: 16),
-                    ),
+
                     child:
                         authProvider.isLoading
-                            ? const CircularProgressIndicator(
-                              color: Colors.white,
+                            ?  CircularProgressIndicator(
+                              color: AppColors.myWhite,
                             )
                             : const Text(
                               'Submit',
-                              style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.w600,
-                              ),
+
                             ),
                   ),
                 ),
@@ -107,8 +96,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   },
                   child: Text(
                     "Already have an account?",
-                    style: TextStyle(color: Colors.green[400]),
-                  ),
+                                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: AppColors.myGreen)
+
+                ),
                 ),
               ],
             ),
@@ -121,7 +111,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
   Widget _buildLabel(String text) {
     return Align(
       alignment: Alignment.centerLeft,
-      child: Text(text, style: const TextStyle(color: Colors.white)),
+      child: Text(text,                   style: Theme.of(context).textTheme.bodyMedium
+      ),
     );
   }
 
@@ -134,13 +125,10 @@ class _SignUpScreenState extends State<SignUpScreen> {
       obscureText: obscure,
       decoration: InputDecoration(
         filled: true,
-        fillColor: Colors.grey[800],
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide.none,
-        ),
+
       ),
-      style: const TextStyle(color: Colors.white),
+      style: Theme.of(context).textTheme.bodyMedium
+    ,
     );
   }
 }

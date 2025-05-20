@@ -174,6 +174,7 @@ class _AddCalorieScreenState extends State<AddCalorieScreen> {
             // Activity dropdown
             Center(
               child: DropdownButton<String>(
+
                 value: selectedActivity,
                 hint: Text("Choose activity"),
                 items: activities
@@ -188,6 +189,7 @@ class _AddCalorieScreenState extends State<AddCalorieScreen> {
                     selectedActivity = newValue;
                   });
                 },
+                
               ),
             ),
 

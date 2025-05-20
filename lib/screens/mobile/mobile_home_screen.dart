@@ -30,7 +30,7 @@ class _HomeScreenState extends State<HomeScreen> {
     _screens = [
       HomeScreenContent(),
       ReportScreen(),
-      const ProfileScreen(),
+       ProfileScreen(),
     ];
   }
 
@@ -82,6 +82,7 @@ class HomeScreenContent extends StatelessWidget {
           _buildCard(
             context,
             title: 'Water Log',
+
             icon: FontAwesomeIcons.droplet,
             onTap: () {
               Navigator.push(

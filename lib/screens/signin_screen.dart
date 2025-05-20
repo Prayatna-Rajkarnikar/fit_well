@@ -1,6 +1,8 @@
+import 'package:fit_well/utils/custom_themes/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/auth_provider.dart';
+import '../providers/theme_provider.dart';
 import '../screens/mobile/mobile_home_screen.dart';
 import 'signup_screen.dart';
 
@@ -55,20 +57,16 @@ class _SignInScreenState extends State<SignInScreen> {
     final authProvider = Provider.of<AuthProvider>(context);
 
     return Scaffold(
-      backgroundColor: Colors.black,
+
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 24.0),
         child: Center(
           child: SingleChildScrollView(
             child: Column(
               children: [
-                const Text(
+                 Text(
                   'Log in',
-                  style: TextStyle(
-                    fontSize: 24,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
-                  ),
+                  style: Theme.of(context).textTheme.headlineLarge
                 ),
                 const SizedBox(height: 32),
                 _buildLabel("Email"),
@@ -87,24 +85,15 @@ class _SignInScreenState extends State<SignInScreen> {
                         authProvider.isLoading
                             ? null
                             : () => _handleLogin(authProvider),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.green[600],
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      padding: const EdgeInsets.symmetric(vertical: 16),
-                    ),
+
                     child:
                         authProvider.isLoading
-                            ? const CircularProgressIndicator(
-                              color: Colors.white,
+                            ?  CircularProgressIndicator(
+                              color: AppColors.myWhite,
                             )
                             : const Text(
                               'Submit',
-                              style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.w600,
-                              ),
+
                             ),
                   ),
                 ),
@@ -118,8 +107,9 @@ class _SignInScreenState extends State<SignInScreen> {
                   },
                   child: Text(
                     "Don't have an account?",
-                    style: TextStyle(color: Colors.green[400]),
-                  ),
+                                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: AppColors.myGreen)
+
+                ),
                 ),
               ],
             ),
@@ -132,7 +122,8 @@ class _SignInScreenState extends State<SignInScreen> {
   Widget _buildLabel(String text) {
     return Align(
       alignment: Alignment.centerLeft,
-      child: Text(text, style: const TextStyle(color: Colors.white)),
+      child: Text(text,  style: Theme.of(context).textTheme.bodyMedium
+    ),
     );
   }
 
@@ -145,13 +136,13 @@ class _SignInScreenState extends State<SignInScreen> {
       obscureText: obscure,
       decoration: InputDecoration(
         filled: true,
-        fillColor: Colors.grey[800],
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
           borderSide: BorderSide.none,
         ),
       ),
-      style: const TextStyle(color: Colors.white),
+    style: Theme.of(context).textTheme.bodyMedium
+    ,
     );
   }
 }

@@ -29,7 +29,8 @@ class _WaterGoalScreenState extends State<WaterGoalScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Set Water Goal'),
+        title:  Text('Set Water Goal',                   style: Theme.of(context).textTheme.headlineLarge
+        ),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -40,7 +41,6 @@ class _WaterGoalScreenState extends State<WaterGoalScreen> {
               keyboardType: TextInputType.number,
               decoration: const InputDecoration(
                 labelText: 'Daily Water Goal (ml)',
-                border: OutlineInputBorder(),
               ),
             ),
             const SizedBox(height: 20),

@@ -1,16 +1,13 @@
-class DailyReport {
-  final double totalCaloriesBurned;
-  final double totalWaterTakenMl;
+class ReportModel {
+  final List<dynamic> waterLogs;
+  final List<dynamic> calorieLogs;
 
-  DailyReport({
-    required this.totalCaloriesBurned,
-    required this.totalWaterTakenMl,
-  });
+  ReportModel({required this.waterLogs, required this.calorieLogs});
 
-  factory DailyReport.fromJson(Map<String, dynamic> json) {
-    return DailyReport(
-      totalCaloriesBurned: (json['totalCaloriesBurned'] ?? 0).toDouble(),
-      totalWaterTakenMl: (json['totalWaterTakenMl'] ?? 0).toDouble(),
+  factory ReportModel.fromJson(Map<String, dynamic> json) {
+    return ReportModel(
+      waterLogs: json['waterLogs'] ?? [],
+      calorieLogs: json['calorieLogs'] ?? [],
     );
   }
 }

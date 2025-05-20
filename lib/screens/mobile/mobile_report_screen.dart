@@ -1,153 +1,103 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
-class ReportScreen extends StatelessWidget {
-  final List<int> monthlyData = [5, 10, 9, 8, 3, 8, 6, 6];
-  final List<String> monthLabels = [
-    'Jan',
-    'Feb',
-    'Mar',
-    'Apr',
-    'May',
-    'Jun',
-    'Jul',
-    'Aug',
-  ];
+import '../../providers/report_provider.dart';
+
+class ReportScreen extends StatefulWidget {
+  const ReportScreen({Key? key}) : super(key: key);
+
+  @override
+  State<ReportScreen> createState() => _ReportScreenState();
+}
+
+class _ReportScreenState extends State<ReportScreen> {
+  bool showWaterLogs = true; // toggle state
+
+  @override
+  void initState() {
+    super.initState();
+    // Fetch logs on screen load
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      Provider.of<ReportProvider>(context, listen: false).fetchReport();
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
+    final reportProvider = Provider.of<ReportProvider>(context);
+
+    if (reportProvider.isLoading) {
+      return const Center(child: CircularProgressIndicator());
+    }
+
+    if (reportProvider.error != null) {
+      return Center(child: Text('Error: ${reportProvider.error}'));
+    }
+
+    // Select which logs to show based on toggle
+    final logs = showWaterLogs
+        ? reportProvider.waterLogs
+        : reportProvider.calorieLogs;
+
     return Scaffold(
-      backgroundColor: Color(0xFF121212),
-      body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                'Report',
-                style: TextStyle(
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white,
+      appBar: AppBar(
+        title: const Text('Daily Report'),
+        centerTitle: true,
+      ),
+      body: Column(
+        children: [
+          // Toggle buttons to choose logs
+          Padding(
+            padding: const EdgeInsets.all(16),
+            child: ToggleButtons(
+              isSelected: [showWaterLogs, !showWaterLogs],
+              onPressed: (index) {
+                setState(() {
+                  showWaterLogs = (index == 0);
+                });
+              },
+              borderRadius: BorderRadius.circular(8),
+              selectedColor: Colors.white,
+              fillColor: Theme.of(context).primaryColor,
+              children: const [
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 24),
+                  child: Text('Water Logs'),
                 ),
-              ),
-              SizedBox(height: 20),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    'Workout History',
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.w600,
-                      color: Colors.white,
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 24),
+                  child: Text('Calorie Logs'),
+                ),
+              ],
+            ),
+          ),
+
+          Expanded(
+            child: logs.isEmpty
+                ? Center(child: Text('No ${showWaterLogs ? 'water' : 'calorie'} logs available'))
+                : ListView.builder(
+              itemCount: logs.length,
+              itemBuilder: (context, index) {
+                final log = logs[index];
+                return Card(
+                  margin:
+                  const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  child: ListTile(
+                    title: Text(showWaterLogs
+                        ? 'Amount: ${log['amountLiters'] ?? '-'} liters'
+                        : 'Calories Burned: ${log['caloriesBurned'] ?? '-'}'),
+                    subtitle: Text(
+                      showWaterLogs
+                          ? 'Date: ${DateTime.parse(log['date']).toLocal().toString().split(' ')[0]}'
+                          : 'Date: ${DateTime.parse(log['createdAt']).toLocal().toString().split(' ')[0]}',
                     ),
                   ),
-                  Row(
-                    children: [
-                      Text('Month', style: TextStyle(color: Colors.white70)),
-                      Icon(Icons.arrow_drop_down, color: Colors.white70),
-                    ],
-                  ),
-                ],
-              ),
-              SizedBox(height: 16),
-              Row(
-                children: [
-                  FilterChip(
-                    label: Text('Water'),
-                    selected: true,
-                    onSelected: (_) {},
-                    backgroundColor: Colors.grey[800],
-                    selectedColor: Colors.white,
-                  ),
-                  SizedBox(width: 8),
-                  FilterChip(
-                    label: Text('Step'),
-                    selected: false,
-                    onSelected: (_) {},
-                    backgroundColor: Colors.grey[800],
-                  ),
-                ],
-              ),
-              SizedBox(height: 40),
-              Expanded(
-                child: CustomPaint(
-                  painter: BarChartPainter(
-                    monthlyData: monthlyData,
-                    monthLabels: monthLabels,
-                  ),
-                  child: Container(),
-                ),
-              ),
-            ],
+                );
+              },
+            ),
           ),
-        ),
-      ),
-      bottomNavigationBar: BottomNavigationBar(
-        backgroundColor: Colors.black,
-        currentIndex: 1,
-        selectedItemColor: Colors.green,
-        unselectedItemColor: Colors.white,
-        items: [
-          BottomNavigationBarItem(icon: Icon(Icons.home), label: "Home"),
-          BottomNavigationBarItem(icon: Icon(Icons.bar_chart), label: "Report"),
-          BottomNavigationBarItem(icon: Icon(Icons.person), label: "Profile"),
         ],
       ),
     );
   }
-}
-
-class BarChartPainter extends CustomPainter {
-  final List<int> monthlyData;
-  final List<String> monthLabels;
-
-  BarChartPainter({required this.monthlyData, required this.monthLabels});
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    final barWidth = size.width / (monthlyData.length * 2);
-    final maxHeight = monthlyData.reduce((a, b) => a > b ? a : b).toDouble();
-
-    final paint =
-        Paint()
-          ..color = Colors.orange
-          ..strokeCap = StrokeCap.round
-          ..style = PaintingStyle.fill;
-
-    final textStyle = TextStyle(color: Colors.white, fontSize: 10);
-    final textPainter = TextPainter(
-      textAlign: TextAlign.center,
-      textDirection: TextDirection.ltr,
-    );
-
-    for (int i = 0; i < monthlyData.length; i++) {
-      final x = (i * 2 + 1) * barWidth;
-      final heightRatio = monthlyData[i] / maxHeight;
-      final barHeight = size.height * heightRatio * 0.7;
-
-      final rect = Rect.fromLTWH(
-        x,
-        size.height - barHeight,
-        barWidth,
-        barHeight,
-      );
-      canvas.drawRect(rect, paint);
-
-      final label = monthLabels[i];
-      textPainter.text = TextSpan(text: label, style: textStyle);
-      textPainter.layout();
-      textPainter.paint(
-        canvas,
-        Offset(
-          x + barWidth / 2 - textPainter.width / 2,
-          size.height - textPainter.height,
-        ),
-      );
-    }
-  }
-
-  @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) => true;
 }

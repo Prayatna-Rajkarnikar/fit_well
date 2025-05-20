@@ -25,7 +25,6 @@ class _CaloriesScreenState extends State<CaloriesScreen> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final themeProvider = Provider.of<ThemeProvider>(context);
     final calorieProvider = Provider.of<CalorieProvider>(context);
     final isLoading = calorieProvider.isLoading;
     final totalCalories = calorieProvider.totalCalorieData?.totalCaloriesBurned ?? 0.0;
@@ -33,7 +32,7 @@ class _CaloriesScreenState extends State<CaloriesScreen> {
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: AppColors.myGreen),
+          icon: Icon(Icons.arrow_back),
           onPressed: () {
             Navigator.pop(context);
           },
