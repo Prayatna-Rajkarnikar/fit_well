@@ -1,4 +1,7 @@
+import 'package:fit_well/providers/theme_provider.dart';
+import 'package:fit_well/utils/custom_themes/colors.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:watch_connectivity/watch_connectivity.dart';
 import 'wear_home_screen.dart';
@@ -52,11 +55,31 @@ class _WearSignInScreenState extends State<WearSignInScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final themeProvider = Provider.of<ThemeProvider>(context);
     return Scaffold(
       body: Center(
-        child: ElevatedButton(
-          onPressed: _authorize,
-          child: const Text("Authorize from Mobile"),
+        child: Padding(
+          padding: const EdgeInsets.all(12.0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(Icons.lock, size: 24, color: themeProvider.isDarkMode ? AppColors.myWhite : AppColors.myBlack,),
+              const SizedBox(height: 8),
+              Text(
+                'You are not authenticated',
+                style: Theme.of(context).textTheme.bodyMedium,
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 12),
+              ElevatedButton(
+                onPressed: _authorize,
+
+                child: const Text(
+                  "Authorize from Mobile",
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );

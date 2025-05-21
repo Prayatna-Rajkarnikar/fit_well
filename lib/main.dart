@@ -41,6 +41,8 @@ void main() async {
 
   // Check for Wear OS
   isWear = (await IsWear().check()) ?? false;
+  final themeProvider = ThemeProvider();
+  await themeProvider.loadTheme();
 
   var userId;
   runApp(
@@ -48,8 +50,8 @@ void main() async {
       providers: [
         ChangeNotifierProvider(create: (_) => AuthProvider()),
         ChangeNotifierProvider(create: (_) => ReportProvider()),
-        ChangeNotifierProvider(create: (_) => ThemeProvider()),
-        ChangeNotifierProvider(create: (_) => WatchProvider()),
+        ChangeNotifierProvider(create: (_) => themeProvider),
+        ChangeNotifierProvider(create: (_) => WatchProvider(themeProvider)),
         ChangeNotifierProvider(create: (_) => CalorieProvider()),
         ChangeNotifierProvider(create: (_) => WaterProvider()),
       ],
@@ -63,21 +65,21 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final themeProvider = Provider.of<ThemeProvider>(context);
-    final authProvider = Provider.of<AuthProvider>(context);
-
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      title: "Fit Well",
-      home:
-          isWear
-              ? authProvider.isLoggedIn
-                  ? const WearHomeScreen()
-                  : const WearSignInScreen()
+    return Consumer<ThemeProvider>(
+      builder: (context, themeProvider, _) {
+        return MaterialApp(
+          debugShowCheckedModeBanner: false,
+          title: "Fit Well",
+          home: isWear
+              ? context.watch<AuthProvider>().isLoggedIn
+              ? const WearHomeScreen()
+              : const WearSignInScreen()
               : SignInScreen(),
-      themeMode: themeProvider.themeMode,
-      theme: MyTheme.lightTheme(isWear: isWear),
-      darkTheme: MyTheme.darkTheme(isWear: isWear),
+          themeMode: themeProvider.themeMode,
+          theme: MyTheme.lightTheme(isWear: isWear),
+          darkTheme: MyTheme.darkTheme(isWear: isWear),
+        );
+      },
     );
   }
 }

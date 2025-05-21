@@ -85,7 +85,7 @@ class _ReportScreenState extends State<ReportScreen> {
                   const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                   child: ListTile(
                     title: Text(showWaterLogs
-                        ? 'Amount: ${log['amountLiters'] ?? '-'} liters'
+                        ? 'Amount: ${log['amountMl'] ?? '-'} liters'
                         : 'Calories Burned: ${log['caloriesBurned'] ?? '-'}', style: Theme.of(context).textTheme.bodyMedium,),
                     subtitle: Text(
                       showWaterLogs

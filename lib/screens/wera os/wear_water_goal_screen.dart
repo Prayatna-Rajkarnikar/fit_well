@@ -36,7 +36,6 @@ class _WaterGoalScreenState extends State<WearWaterGoalScreen> {
               style: const TextStyle(fontSize: 12),
               textAlign: TextAlign.center,
               decoration: const InputDecoration(
-                isDense: true,
                 border: OutlineInputBorder(),
               ),
             ),

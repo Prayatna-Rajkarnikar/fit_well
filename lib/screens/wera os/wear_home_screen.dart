@@ -1,6 +1,7 @@
 import 'package:fit_well/providers/water_provider.dart';
 import 'package:fit_well/screens/wera%20os/wear_set_timer.dart';
 import 'package:fit_well/screens/wera%20os/wear_water_screen.dart';
+import 'package:fit_well/utils/custom_themes/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:wear_plus/wear_plus.dart';
@@ -27,6 +28,7 @@ class _WearHomeScreenState extends State<WearHomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final themeProvider = Provider.of<ThemeProvider>(context);
     return AmbientMode(
       builder:
           (context, mode, child) => Scaffold(
@@ -75,6 +77,10 @@ class _WearHomeScreenState extends State<WearHomeScreen> {
                         trailing: Icon(
                           Icons.local_fire_department_rounded,
                           size: 20.0,
+                          color:
+                              themeProvider.isDarkMode
+                                  ? AppColors.myWhite
+                                  : AppColors.myBlack,
                         ),
                         onTap: () {
                           Navigator.push(
@@ -92,7 +98,14 @@ class _WearHomeScreenState extends State<WearHomeScreen> {
                           'Water Log',
                           style: Theme.of(context).textTheme.headlineLarge,
                         ),
-                        trailing: Icon(Icons.water_drop_rounded, size: 20.0),
+                        trailing: Icon(
+                          Icons.water_drop_rounded,
+                          size: 20.0,
+                          color:
+                              themeProvider.isDarkMode
+                                  ? AppColors.myWhite
+                                  : AppColors.myBlack,
+                        ),
                         onTap: () {
                           Navigator.push(
                             context,
@@ -109,7 +122,14 @@ class _WearHomeScreenState extends State<WearHomeScreen> {
                           'Timer',
                           style: Theme.of(context).textTheme.headlineLarge,
                         ),
-                        trailing: Icon(Icons.alarm_rounded, size: 20.0),
+                        trailing: Icon(
+                          Icons.alarm_rounded,
+                          size: 20.0,
+                          color:
+                              themeProvider.isDarkMode
+                                  ? AppColors.myWhite
+                                  : AppColors.myBlack,
+                        ),
                         onTap: () {
                           Navigator.push(
                             context,

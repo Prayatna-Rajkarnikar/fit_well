@@ -1,3 +1,4 @@
+import 'package:fit_well/providers/theme_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:watch_connectivity/watch_connectivity.dart';
@@ -5,19 +6,27 @@ import 'package:watch_connectivity/watch_connectivity.dart';
 class WatchProvider with ChangeNotifier {
   final WatchConnectivity _watch = WatchConnectivity();
   final Map<String, dynamic> _userData = {};
+  final ThemeProvider _themeProvider;
+
 
   Map<String, dynamic> get userData => _userData;
 
-  WatchProvider() {
+  WatchProvider(this._themeProvider) {
     _watch.messageStream.listen((message) async {
       debugPrint('Received message: $message');
 
+      final prefs = await SharedPreferences.getInstance();
+
       if (message.containsKey('token')) {
-        final prefs = await SharedPreferences.getInstance();
         await prefs.setString('token', message['token']);
-      } else {
-        debugPrint('No token found in message.');
       }
+
+      if (message.containsKey('isDarkMode')) {
+        final bool isDark = message['isDarkMode'];
+        await prefs.setBool('isDarkMode', isDark);
+        _themeProvider.toggleTheme(isDark);
+      }
+
 
       // _userData.clear();
       _userData.addAll(message);

@@ -1,4 +1,5 @@
 import 'package:fit_well/screens/wera%20os/wear_add_timer.dart';
+import 'package:fit_well/utils/custom_themes/colors.dart';
 import 'package:flutter/material.dart';
 import 'dart:async';
 
@@ -54,16 +55,15 @@ class _WearSetTimerScreenState extends State<WearSetTimerScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.black,
       body: SafeArea(
         child: Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               const SizedBox(height: 4),
-              const Text(
-                "min",
-                style: TextStyle(fontSize: 14, color: Colors.white70),
+               Text(
+                "Timer",
+                style: Theme.of(context).textTheme.headlineLarge,
               ),
 
               const SizedBox(height: 20),
@@ -103,17 +103,9 @@ class _WearSetTimerScreenState extends State<WearSetTimerScreen> {
                     onPressed: (selectedMinutes > 0 || selectedSeconds > 0)
                         ? _navigateToTimerScreen
                         : null,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.green,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(20),
-                      ),
-                      padding: const EdgeInsets.symmetric(vertical: 12),
-                      disabledBackgroundColor: Colors.grey[700],
-                    ),
+
                     child: const Text(
                       'Set',
-                      style: TextStyle(fontSize: 14, color: Colors.white),
                     ),
                   ),
                 ),
@@ -147,7 +139,7 @@ class _WearSetTimerScreenState extends State<WearSetTimerScreen> {
                 valueList[index].toString().padLeft(2, '0'),
                 style: TextStyle(
                   fontSize: isSelected ? 22 : 16,
-                  color: isSelected ? Colors.greenAccent : Colors.white70,
+                  color: isSelected ? AppColors.myGreen : AppColors.myGray,
                   fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
                 ),
               ),
