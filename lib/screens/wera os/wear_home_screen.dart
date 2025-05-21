@@ -1,9 +1,13 @@
+import 'package:fit_well/providers/water_provider.dart';
+import 'package:fit_well/screens/wera%20os/wear_set_timer.dart';
+import 'package:fit_well/screens/wera%20os/wear_water_screen.dart';
+import 'package:fit_well/utils/custom_themes/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:wear_plus/wear_plus.dart';
 
-import '../providers/theme_provider.dart';
-import '../providers/watch_provider.dart';
+import '../../providers/theme_provider.dart';
+import '../../providers/watch_provider.dart';
 import 'wear_calorie_screen.dart';
 
 class WearHomeScreen extends StatefulWidget {
@@ -19,10 +23,12 @@ class _WearHomeScreenState extends State<WearHomeScreen> {
     super.initState();
     Provider.of<WatchProvider>(context, listen: false);
     Provider.of<WatchProvider>(context, listen: false).loadUserData();
+    Provider.of<WaterProvider>(context, listen: false);
   }
 
   @override
   Widget build(BuildContext context) {
+    final themeProvider = Provider.of<ThemeProvider>(context);
     return AmbientMode(
       builder:
           (context, mode, child) => Scaffold(
@@ -64,8 +70,18 @@ class _WearHomeScreenState extends State<WearHomeScreen> {
                   children: [
                     Card(
                       child: ListTile(
-                        title: Text('Calories Burned', style: Theme.of(context).textTheme.headlineLarge,),
-                        trailing: Icon(Icons.local_fire_department_rounded, size: 20.0,),
+                        title: Text(
+                          'Calories Burned',
+                          style: Theme.of(context).textTheme.headlineLarge,
+                        ),
+                        trailing: Icon(
+                          Icons.local_fire_department_rounded,
+                          size: 20.0,
+                          color:
+                              themeProvider.isDarkMode
+                                  ? AppColors.myWhite
+                                  : AppColors.myBlack,
+                        ),
                         onTap: () {
                           Navigator.push(
                             context,
@@ -78,17 +94,53 @@ class _WearHomeScreenState extends State<WearHomeScreen> {
                     ),
                     Card(
                       child: ListTile(
-                        title: Text('Water Log', style: Theme.of(context).textTheme.headlineLarge,),
-                        trailing: Icon(Icons.water_drop_rounded, size: 20.0,),
+                        title: Text(
+                          'Water Log',
+                          style: Theme.of(context).textTheme.headlineLarge,
+                        ),
+                        trailing: Icon(
+                          Icons.water_drop_rounded,
+                          size: 20.0,
+                          color:
+                              themeProvider.isDarkMode
+                                  ? AppColors.myWhite
+                                  : AppColors.myBlack,
+                        ),
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => const WearWaterScreen(),
+                            ),
+                          );
+                        },
                       ),
                     ),
                     Card(
                       child: ListTile(
-                        title: Text('Timer', style: Theme.of(context).textTheme.headlineLarge,),
-                        trailing: Icon(Icons.alarm_rounded, size: 20.0,),
+                        title: Text(
+                          'Timer',
+                          style: Theme.of(context).textTheme.headlineLarge,
+                        ),
+                        trailing: Icon(
+                          Icons.alarm_rounded,
+                          size: 20.0,
+                          color:
+                              themeProvider.isDarkMode
+                                  ? AppColors.myWhite
+                                  : AppColors.myBlack,
+                        ),
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => const WearSetTimerScreen(),
+                            ),
+                          );
+                        },
                       ),
                     ),
-                    SizedBox(height: 28.0,)
+                    SizedBox(height: 28.0),
                   ],
                 ),
               ),

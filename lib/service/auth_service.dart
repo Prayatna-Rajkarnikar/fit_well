@@ -23,15 +23,27 @@ class AuthService {
       String token = data['token'];
       final prefs = await SharedPreferences.getInstance();
       await prefs.setString('token', token);
-      debugPrint('Token found: $token');
+      debugPrint('Token stored: $token');
 
       return UserModel.fromJson(data['user']);
     } else {
-      throw Exception('Login failed: ${response.body}');
+      String errorMessage = 'Login failed';
+      try {
+        final errorData = jsonDecode(response.body);
+        if (errorData['error'] != null) {
+          errorMessage = errorData['error'];
+        }
+      } catch (_) {}
+
+      throw Exception(errorMessage);
     }
   }
 
-  Future<void> registerUser(String name, String email, String password) async {
+  Future<Map<String, dynamic>> registerUser(
+    String name,
+    String email,
+    String password,
+  ) async {
     final url = Uri.parse('$baseUrl/auth/register');
     final response = await http.post(
       url,
@@ -39,8 +51,20 @@ class AuthService {
       body: jsonEncode({'name': name, 'email': email, 'password': password}),
     );
 
-    if (response.statusCode != 201) {
-      throw Exception('Register failed: ${response.body}');
+    if (response.statusCode == 201) {
+      return {'success': true, 'message': 'Registration successful!'};
+    } else {
+      String errorMsg = 'Registration failed';
+      try {
+        final data = jsonDecode(response.body);
+        if (data['error'] != null) {
+          errorMsg = data['error'];
+        }
+      } catch (_) {
+        throw Exception('Register failed');
+      }
+
+      return {'success': false, 'message': errorMsg};
     }
   }
 }

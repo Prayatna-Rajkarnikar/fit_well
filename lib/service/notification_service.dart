@@ -1,106 +1,80 @@
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
-import 'package:firebase_core/firebase_core.dart';
-import 'package:timezone/data/latest.dart' as tz;
-import 'package:timezone/timezone.dart' as tz;
 
 class NotificationService {
-  static final FirebaseMessaging _messaging = FirebaseMessaging.instance;
-  static final FlutterLocalNotificationsPlugin
-  _flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
+  static final NotificationService _instance = NotificationService._internal();
 
-  static Future<void> initialize() async {
-    await _setupFlutterNotifications();
-    await _firebaseBackgroundHandlerSetup();
+  factory NotificationService() => _instance;
 
-    // Ask permission
-    NotificationSettings settings = await _messaging.requestPermission();
-    print('🔒 Permission granted: ${settings.authorizationStatus}');
+  late FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin;
 
-    // Token
-    String? token = await _messaging.getToken();
-    print("✅ FCM Token: $token");
-
-    // Foreground message
-    FirebaseMessaging.onMessage.listen((RemoteMessage message) {
-      print("📲 Foreground message received: ${message.notification?.title}");
-      _showNotification(
-        message.notification?.title ?? '',
-        message.notification?.body ?? '',
-      );
-    });
-
-    // When app is opened from notification
-    FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
-      print("🟢 Notification clicked: ${message.data}");
-    });
+  NotificationService._internal() {
+    flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
   }
 
-  static Future<void> _firebaseBackgroundHandlerSetup() async {
-    FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
-  }
-
-  static Future<void> _setupFlutterNotifications() async {
-    const AndroidInitializationSettings androidSettings =
-        AndroidInitializationSettings('@mipmap/ic_launcher');
-
-    const InitializationSettings initSettings = InitializationSettings(
-      android: androidSettings,
+  Future<void> init() async {
+    const initializationSettingsAndroid = AndroidInitializationSettings(
+      '@mipmap/ic_launcher',
+    );
+    const initializationSettings = InitializationSettings(
+      android: initializationSettingsAndroid,
     );
 
-    await _flutterLocalNotificationsPlugin.initialize(initSettings);
+    await flutterLocalNotificationsPlugin.initialize(initializationSettings);
   }
 
-  static Future<void> _showNotification(String title, String body) async {
-    const AndroidNotificationDetails androidDetails =
-        AndroidNotificationDetails(
-          'channel_id',
-          'General Notifications',
-          importance: Importance.max,
-          priority: Priority.high,
-        );
+  Future<void> showWaterGoalNotification(int current, int goal) async {
+    String notificationBody;
 
-    const NotificationDetails details = NotificationDetails(
-      android: androidDetails,
+    if (current >= goal) {
+      notificationBody =
+      "🎉 Congratulations! You've reached your water goal of $goal ml.";
+    } else {
+      final remaining = goal - current;
+      notificationBody =
+      "💧 Keep going! Only $remaining ml left to reach your goal.";
+    }
+
+    const androidPlatformChannelSpecifics = AndroidNotificationDetails(
+      'water_goal_channel',
+      'Water Goal Notifications',
+      channelDescription: 'Notifications about water intake goals',
+      importance: Importance.max,
+      priority: Priority.high,
+      showWhen: false,
     );
 
-    await _flutterLocalNotificationsPlugin.show(0, title, body, details);
+    const platformChannelSpecifics = NotificationDetails(
+      android: androidPlatformChannelSpecifics,
+    );
+
+    await flutterLocalNotificationsPlugin.show(
+      0,
+      'Water Intake Reminder',
+      notificationBody,
+      platformChannelSpecifics,
+    );
   }
 
-  static Future<void> scheduleWaterReminder() async {
-    tz.initializeTimeZones();
-    final scheduledTime = tz.TZDateTime.now(
-      tz.local,
-    ).add(const Duration(hours: 2));
-
-    const AndroidNotificationDetails androidDetails =
-        AndroidNotificationDetails(
-          'water_reminder_channel',
-          'Water Reminders',
-          channelDescription: 'Reminders to stay hydrated',
-          importance: Importance.max,
-          priority: Priority.high,
-        );
-
-    const NotificationDetails details = NotificationDetails(
-      android: androidDetails,
+  // New method for hydration reminder notification
+  Future<void> showHydrationReminder() async {
+    const androidPlatformChannelSpecifics = AndroidNotificationDetails(
+      'hydration_reminder_channel',
+      'Hydration Reminder Notifications',
+      channelDescription: 'Reminders to drink water if inactive',
+      importance: Importance.max,
+      priority: Priority.high,
+      showWhen: false,
     );
 
-    await _flutterLocalNotificationsPlugin.zonedSchedule(
+    const platformChannelSpecifics = NotificationDetails(
+      android: androidPlatformChannelSpecifics,
+    );
+
+    await flutterLocalNotificationsPlugin.show(
       1,
-      '💧 Time to hydrate!',
-      'You added 5L+ earlier. Stay hydrated and take another sip!',
-      scheduledTime,
-      details,
-
-      androidScheduleMode:
-          AndroidScheduleMode.exactAllowWhileIdle, // ✅ required
+      'Hydration Reminder',
+      "🚰 Hey! Don't forget to drink some water now!",
+      platformChannelSpecifics,
     );
   }
-}
-
-// Must be top-level
-Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
-  await Firebase.initializeApp();
-  print("📦 Background message: ${message.messageId}");
 }

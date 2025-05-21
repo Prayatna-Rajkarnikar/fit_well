@@ -1,43 +1,100 @@
-import 'package:fit_well/service/notification_service.dart';
-import 'package:fit_well/service/water_api_service.dart';
-import 'package:flutter/material.dart';
-import '../models/water_intake_model.dart';
+import 'dart:async';
+import 'package:flutter/foundation.dart';
+import '../service/water_api_service.dart';
+import '../service/notification_service.dart';
 
-class WaterProvider with ChangeNotifier {
-  final WaterApiService apiService;
-  WaterIntakeModel? _intakeData;
-  bool _loading = false;
+class WaterProvider extends ChangeNotifier {
+  final WaterApiService _apiService = WaterApiService();
+  final NotificationService _notificationService = NotificationService();
 
-  WaterProvider({required this.apiService});
+  int _waterGoal = 2000;
+  int _currentIntake = 0;
 
-  WaterIntakeModel? get intakeData => _intakeData;
-  bool get loading => _loading;
+  Timer? _reminderTimer;
 
-  Future<void> loadIntake(String userId) async {
-    _loading = true;
-    notifyListeners();
-    _intakeData = await apiService.fetchDailyIntake(userId);
-    _loading = false;
-    notifyListeners();
+  int get waterGoal => _waterGoal;
+  int get currentIntake => _currentIntake;
+
+  WaterProvider() {
+    _notificationService.init();
+    _startReminderTimer();
   }
 
-  Future<void> addWater(String userId, double liters) async {
-    // First, check the current intake data
-    final lastIntake = _intakeData?.lastIntakeTime;
+  void _startReminderTimer() {
+    _reminderTimer?.cancel();
 
-    // Define a cooldown period (e.g., 1 hour)
-    final bool shouldNotify =
-        lastIntake == null ||
-        DateTime.now().difference(lastIntake) > const Duration(hours: 1);
-
-    final success = await apiService.addIntake(userId, liters);
-    if (success) {
-      await loadIntake(userId); // refresh data
-
-      // Trigger reminder only if enough time has passed
-      if (liters >= 5.0 && shouldNotify) {
-        await NotificationService.scheduleWaterReminder();
+    // Start a new timer for 1 minute
+    _reminderTimer = Timer(const Duration(minutes: 1), () {
+      // If no water intake in the last minute, show reminder notification
+      if (_currentIntake == 0) {
+        _notificationService.showHydrationReminder();
       }
+    });
+  }
+
+  Future<void> setWaterGoal(int waterGoalMl) async {
+    try {
+      await _apiService.setWaterGoal(waterGoalMl);
+      _waterGoal = waterGoalMl;
+
+      // Reset intake and restart timer
+      _currentIntake = 0;
+      notifyListeners();
+      _startReminderTimer();
+    } catch (e) {
+      debugPrint("Provider Error - setWaterGoal: $e");
+      rethrow;
     }
+  }
+
+  Future<void> addWaterIntake(int amountMl) async {
+    try {
+      _currentIntake += amountMl;
+      notifyListeners();
+
+      // Reset reminder timer because user just added water intake
+      _startReminderTimer();
+
+      await _apiService.addWaterIntake(amountMl);
+      await fetchDailyIntake();
+    } catch (e) {
+      _currentIntake -= amountMl;
+      notifyListeners();
+      debugPrint("Provider Error - addWaterIntake: $e");
+      rethrow;
+    }
+  }
+
+  Future<void> fetchDailyIntake() async {
+    try {
+      final data = await _apiService.getDailyIntake();
+      _currentIntake = data['totalIntakeMl'] ?? 0;
+      _waterGoal = data['goalMl'] ?? 2000;
+      notifyListeners();
+
+      _startReminderTimer();
+    } catch (e) {
+      debugPrint("Provider Error - fetchDailyIntake: $e");
+      rethrow;
+    }
+  }
+
+  Future<void> resetWaterIntake() async {
+    try {
+      await _apiService.resetWaterIntake();
+      _currentIntake = 0;
+      notifyListeners();
+
+      _startReminderTimer();
+    } catch (e) {
+      debugPrint("Provider Error - resetWaterIntake: $e");
+      rethrow;
+    }
+  }
+
+  @override
+  void dispose() {
+    _reminderTimer?.cancel();
+    super.dispose();
   }
 }

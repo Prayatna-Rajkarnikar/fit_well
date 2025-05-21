@@ -1,8 +1,10 @@
-import 'package:fit_well/screens/signup_screen.dart';
+import 'package:fit_well/utils/custom_themes/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-
 import '../providers/auth_provider.dart';
+import '../providers/theme_provider.dart';
+import '../screens/mobile/mobile_home_screen.dart';
+import 'signup_screen.dart';
 
 class SignInScreen extends StatefulWidget {
   const SignInScreen({super.key});
@@ -29,25 +31,74 @@ class _SignInScreenState extends State<SignInScreen> {
     super.dispose();
   }
 
+  Future<void> _handleLogin(AuthProvider authProvider) async {
+    final email = _emailController.text.trim();
+    final password = _passwordController.text;
+
+    final result = await authProvider.login(email, password);
+
+    if (!mounted) return;
+
+    final snackBar = SnackBar(
+      content: Row(
+        children: [
+          Icon(
+            result['success'] ? Icons.check_circle : Icons.error,
+            color: Colors.white,
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Text(
+              result['message'],
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.w500,
+                color: result['success'] ? AppColors.myBlack : Colors.white,
+              ),
+            ),
+          ),
+        ],
+      ),
+      backgroundColor:
+          result['success'] ? Colors.green.shade700 : Colors.red.shade700,
+      duration: const Duration(seconds: 5),
+      behavior: SnackBarBehavior.floating,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      margin: const EdgeInsets.all(16),
+      elevation: 6,
+      action: SnackBarAction(
+        label: 'DISMISS',
+        textColor: Colors.white,
+        onPressed: () {
+          ScaffoldMessenger.of(context).hideCurrentSnackBar();
+        },
+      ),
+    );
+
+    ScaffoldMessenger.of(context).showSnackBar(snackBar);
+
+    if (result['success']) {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (_) => HomeScreen()),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final authProvider = Provider.of<AuthProvider>(context);
 
     return Scaffold(
-      backgroundColor: Colors.black,
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 24.0),
         child: Center(
           child: SingleChildScrollView(
             child: Column(
               children: [
-                const Text(
+                Text(
                   'Log in',
-                  style: TextStyle(
-                    fontSize: 24,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
-                  ),
+                  style: Theme.of(context).textTheme.headlineLarge,
                 ),
                 const SizedBox(height: 32),
                 _buildLabel("Email"),
@@ -62,31 +113,17 @@ class _SignInScreenState extends State<SignInScreen> {
                 SizedBox(
                   width: double.infinity,
                   child: ElevatedButton(
-                    onPressed: () {
-                      authProvider.login(
-                        _emailController.text.trim(),
-                        _passwordController.text,
-                      );
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.green[600],
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      padding: const EdgeInsets.symmetric(vertical: 16),
-                    ),
+                    onPressed:
+                        authProvider.isLoading
+                            ? null
+                            : () => _handleLogin(authProvider),
+
                     child:
                         authProvider.isLoading
-                            ? const CircularProgressIndicator(
-                              color: Colors.white,
+                            ? CircularProgressIndicator(
+                              color: AppColors.myWhite,
                             )
-                            : const Text(
-                              'Submit',
-                              style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
+                            : const Text('Submit'),
                   ),
                 ),
                 const SizedBox(height: 16),
@@ -94,12 +131,14 @@ class _SignInScreenState extends State<SignInScreen> {
                   onPressed: () {
                     Navigator.pushReplacement(
                       context,
-                      MaterialPageRoute(builder: (_) => SignUpScreen()),
+                      MaterialPageRoute(builder: (_) => const SignUpScreen()),
                     );
                   },
                   child: Text(
-                    "Don't have an account?",
-                    style: TextStyle(color: Colors.green[400]),
+                    "Don't have an account? Register",
+                    style: Theme.of(
+                      context,
+                    ).textTheme.bodyMedium?.copyWith(color: AppColors.myGreen),
                   ),
                 ),
               ],
@@ -113,7 +152,7 @@ class _SignInScreenState extends State<SignInScreen> {
   Widget _buildLabel(String text) {
     return Align(
       alignment: Alignment.centerLeft,
-      child: Text(text, style: const TextStyle(color: Colors.white)),
+      child: Text(text, style: Theme.of(context).textTheme.bodyMedium),
     );
   }
 
@@ -126,13 +165,12 @@ class _SignInScreenState extends State<SignInScreen> {
       obscureText: obscure,
       decoration: InputDecoration(
         filled: true,
-        fillColor: Colors.grey[800],
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
           borderSide: BorderSide.none,
         ),
       ),
-      style: const TextStyle(color: Colors.white),
+      style: Theme.of(context).textTheme.bodyMedium,
     );
   }
 }
